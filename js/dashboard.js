@@ -94,32 +94,32 @@ function renderDebts() {
 
 function renderBudgets() {
   const el = document.getElementById('budgetList');
-  const now = new Date();
-  const spentByCategory = {};
+  const budgets = getBudgets();
 
-  if (BUDGET_LIMITS.length === 0) {
-    el.innerHTML = '<div class="empty-state">No budgets set yet.</div>';
+  if (budgets.length === 0) {
+    el.innerHTML = '<div class="empty-state">No budgets set yet — <a href="budgets.html" style="color:var(--gold);">create one</a>.</div>';
     return;
   }
 
-  getTransactions().forEach(t => {
-    if (t.wallet !== 'aed' || t.type !== 'expense') return;
-    const d = new Date(t.date);
-    if (d.getFullYear() !== now.getFullYear() || d.getMonth() !== now.getMonth()) return;
-    spentByCategory[t.category] = (spentByCategory[t.category] || 0) + Math.abs(t.amount);
-  });
-
-  el.innerHTML = BUDGET_LIMITS.map(b => {
-    const spent = Math.round(spentByCategory[b.name] || 0);
+  const now = new Date();
+  el.innerHTML = budgets.map(b => {
+    let spent = 0;
+    getTransactions().forEach(t => {
+      if (t.wallet !== b.wallet || t.type !== 'expense' || t.category !== b.category) return;
+      const d = new Date(t.date);
+      if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) spent += Math.abs(t.amount);
+    });
+    spent = Math.round(spent);
     const pct = Math.min(100, Math.round((spent / b.limit) * 100));
     let cls = 'ok';
     if (pct >= 100) cls = 'over';
     else if (pct >= 80) cls = 'warn';
+    const sym = b.wallet === 'aed' ? 'AED ' : '₹';
     return `
       <div class="budget-item">
         <div class="budget-head">
-          <span class="b-name">${b.name}</span>
-          <span class="b-figures">AED ${spent} / ${b.limit}</span>
+          <span class="b-name">${b.category}</span>
+          <span class="b-figures">${sym}${spent} / ${b.limit}</span>
         </div>
         <div class="budget-track"><div class="budget-fill ${cls}" style="width:${pct}%"></div></div>
       </div>

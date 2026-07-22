@@ -232,11 +232,11 @@ function saveTransaction() {
     adjustWalletBalance(qaWallet, amount);
   }
 
-  renderWalletCards();
-  renderStats();
-  renderTransactions();
-  renderDonut();
-  renderBudgets();
+  if (typeof renderWalletCards === 'function') renderWalletCards();
+  if (typeof renderStats === 'function') renderStats();
+  if (typeof renderTransactions === 'function') renderTransactions();
+  if (typeof renderDonut === 'function') renderDonut();
+  if (typeof renderBudgets === 'function') renderBudgets();
 
   const wasEditing = !!editingTxId;
   closeSheet();
@@ -256,11 +256,11 @@ function deleteCurrentTransaction() {
   }
   deleteTransaction(editingTxId);
 
-  renderWalletCards();
-  renderStats();
-  renderTransactions();
-  renderDonut();
-  renderBudgets();
+  if (typeof renderWalletCards === 'function') renderWalletCards();
+  if (typeof renderStats === 'function') renderStats();
+  if (typeof renderTransactions === 'function') renderTransactions();
+  if (typeof renderDonut === 'function') renderDonut();
+  if (typeof renderBudgets === 'function') renderBudgets();
 
   closeSheet();
   showToast('Transaction deleted');

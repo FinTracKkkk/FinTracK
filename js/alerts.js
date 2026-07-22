@@ -35,23 +35,23 @@ function computeAlerts() {
     }
   });
 
-  // Budgets — computed from real AED transactions this month
-  if (typeof BUDGET_LIMITS !== 'undefined' && typeof getTransactions === 'function') {
+  // Budgets — computed from real transactions against your saved budgets
+  if (typeof getBudgets === 'function' && typeof getTransactions === 'function') {
     const now = new Date();
-    const spentByCategory = {};
-    getTransactions().forEach(t => {
-      if (t.wallet !== 'aed' || t.type !== 'expense') return;
-      const d = new Date(t.date);
-      if (d.getFullYear() !== now.getFullYear() || d.getMonth() !== now.getMonth()) return;
-      spentByCategory[t.category] = (spentByCategory[t.category] || 0) + Math.abs(t.amount);
-    });
-    BUDGET_LIMITS.forEach(b => {
-      const spent = Math.round(spentByCategory[b.name] || 0);
+    getBudgets().forEach(b => {
+      let spent = 0;
+      getTransactions().forEach(t => {
+        if (t.wallet !== b.wallet || t.type !== 'expense' || t.category !== b.category) return;
+        const d = new Date(t.date);
+        if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) spent += Math.abs(t.amount);
+      });
+      spent = Math.round(spent);
       const pct = (spent / b.limit) * 100;
+      const sym = b.wallet === 'aed' ? 'AED ' : '₹';
       if (pct >= 100) {
-        alerts.push({ level: 'red', text: `${b.name} budget exceeded — AED ${spent} of ${b.limit}.` });
+        alerts.push({ level: 'red', text: `${b.category} budget exceeded — ${sym}${spent} of ${b.limit}.` });
       } else if (pct >= 80) {
-        alerts.push({ level: 'orange', text: `${b.name} is at ${Math.round(pct)}% of its budget.` });
+        alerts.push({ level: 'orange', text: `${b.category} is at ${Math.round(pct)}% of its budget.` });
       }
     });
   }

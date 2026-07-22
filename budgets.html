@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icons/icon-192.png">
-<title>FinTrack — Savings Goals</title>
+<title>FinTrack — Budgets</title>
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/dashboard.css">
 <link rel="stylesheet" href="css/salary.css">
@@ -28,10 +28,10 @@
   </div>
   <a class="drawer-item" href="app.html" style="text-decoration:none;"><span class="di-icon">📊</span> Dashboard</a>
   <a class="drawer-item" href="salary.html" style="text-decoration:none;"><span class="di-icon">💼</span> Salary</a>
-  <a class="drawer-item" id="drawerOwe" href="debts.html?view=owe" style="text-decoration:none;"><span class="di-icon">📤</span> Debt I Owe</a>
-  <a class="drawer-item" id="drawerReceive" href="debts.html?view=receive" style="text-decoration:none;"><span class="di-icon">📥</span> Money to Receive</a>
-  <a class="drawer-item" href="budgets.html" style="text-decoration:none;"><span class="di-icon">🎯</span> Budgets</a>
-  <a class="drawer-item active" href="goals.html" style="text-decoration:none;"><span class="di-icon">🐖</span> Savings Goals</a>
+  <a class="drawer-item" href="debts.html?view=owe" style="text-decoration:none;"><span class="di-icon">📤</span> Debt I Owe</a>
+  <a class="drawer-item" href="debts.html?view=receive" style="text-decoration:none;"><span class="di-icon">📥</span> Money to Receive</a>
+  <a class="drawer-item active" href="budgets.html" style="text-decoration:none;"><span class="di-icon">🎯</span> Budgets</a>
+  <a class="drawer-item" href="goals.html" style="text-decoration:none;"><span class="di-icon">🐖</span> Savings Goals</a>
   <a class="drawer-item" href="analytics.html" style="text-decoration:none;"><span class="di-icon">📈</span> Analytics</a>
   <a class="drawer-item" href="settings.html" style="text-decoration:none;"><span class="di-icon">⚙️</span> Settings</a>
   <button class="drawer-item" onclick="logout()"><span class="di-icon">🚪</span> Logout</button>
@@ -42,112 +42,75 @@
     <button class="icon-btn" id="menuBtn" aria-label="Menu">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
     </button>
-    <div class="brand">Savings Goals</div>
+    <div class="brand">Budgets</div>
     <div class="topbar-actions">
       <button class="icon-btn" id="refreshBtn" aria-label="Refresh">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
       </button>
       <a class="icon-btn" href="app.html" aria-label="Back" style="text-decoration:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-    </a>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
     </div>
   </header>
 
   <section class="section">
-    <div id="goalsList"></div>
+    <div id="budgetsList"></div>
   </section>
 </div>
 
-<button class="fab" id="addGoalBtn" aria-label="Add goal">
+<button class="fab" id="addBudgetBtn" aria-label="Add budget">
   <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 </button>
 
-<!-- Add Goal form -->
-<div class="form-screen" id="addGoalForm">
+<!-- Add/Edit Budget form -->
+<div class="form-screen" id="budgetForm">
   <div class="app-shell" style="padding-bottom:20px;">
     <header class="topbar">
-      <button class="icon-btn" id="addFormClose" aria-label="Close">
+      <button class="icon-btn" id="formClose" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-      <div class="brand" id="goalFormTitle">New Goal</div>
+      <div class="brand" id="budgetFormTitle">New Budget</div>
       <span style="width:40px;"></span>
     </header>
     <div class="form-body">
       <div class="form-field">
-        <label>Goal name</label>
-        <input type="text" id="newGoalName" placeholder="e.g. Vacation Fund">
+        <label>Category</label>
+        <select id="budgetCategory">
+          <option value="Food & Dining">🍽️ Food & Dining</option>
+          <option value="Transport">🚗 Transport</option>
+          <option value="Rent & Housing">🏠 Rent & Housing</option>
+          <option value="Utilities">💡 Utilities</option>
+          <option value="Shopping">🛍️ Shopping</option>
+          <option value="Health">⚕️ Health</option>
+          <option value="Family Transfer">💸 Family Transfer</option>
+          <option value="Entertainment">🎬 Entertainment</option>
+        </select>
       </div>
       <div class="form-grid-2">
         <div class="form-field">
-          <label>Target amount</label>
-          <input type="number" inputmode="decimal" id="newGoalTarget" placeholder="0">
+          <label>Monthly limit</label>
+          <input type="number" inputmode="decimal" id="budgetLimit" placeholder="0">
         </div>
         <div class="form-field">
-          <label>Currency</label>
-          <select id="newGoalWallet">
+          <label>Wallet</label>
+          <select id="budgetWallet">
             <option value="aed">🇦🇪 AED</option>
             <option value="inr">🇮🇳 INR</option>
           </select>
         </div>
       </div>
-      <div class="form-field">
-        <label>Already saved (optional)</label>
-        <input type="number" inputmode="decimal" id="newGoalCurrent" placeholder="0">
-      </div>
-      <div class="form-field">
-        <label>Target date (optional)</label>
-        <input type="date" id="newGoalDate">
-      </div>
     </div>
     <div class="form-footer">
-      <button class="save-btn" id="saveGoalBtn">Save Goal</button>
-      <button class="delete-link" id="deleteGoalBtn" style="display:none;">Delete this goal</button>
+      <button class="save-btn" id="saveBudgetBtn">Save Budget</button>
+      <button class="delete-link" id="deleteBudgetBtn" style="display:none;">Delete this budget</button>
     </div>
-  </div>
-</div>
-
-<!-- Goal detail / contribute -->
-<div class="form-screen" id="goalDetail">
-  <div class="app-shell" style="padding-bottom:20px;">
-    <header class="topbar">
-      <button class="icon-btn" id="detailClose" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="brand">Goal Details</div>
-      <button class="icon-btn" id="editGoalBtn" aria-label="Edit">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </button>
-    </header>
-
-    <div class="detail-hero">
-      <div class="detail-avatar" id="detailIcon">🎯</div>
-      <h2 id="detailName">—</h2>
-      <div class="dh-sub" id="detailSub">—</div>
-    </div>
-
-    <div class="detail-progress">
-      <div class="progress-labels">
-        <span>Saved: <b id="detailCurrent">—</b></span>
-        <span>Target: <b id="detailTarget">—</b></span>
-      </div>
-      <div class="budget-track"><div class="budget-fill ok" id="detailProgressFill" style="width:0%"></div></div>
-      <div style="text-align:right;font-size:11px;color:var(--text-secondary);margin-top:6px;" id="detailPct">0%</div>
-    </div>
-
-    <section class="section" style="padding-top:0;">
-      <div class="section-title">Add Contribution</div>
-      <div class="log-payment-row">
-        <input type="number" inputmode="decimal" id="contributeAmountInput" placeholder="Amount to add">
-        <button id="contributeBtn">Add</button>
-      </div>
-    </section>
   </div>
 </div>
 
 <script src="js/auth.js"></script>
-<script src="js/goals-store.js"></script>
+<script src="js/budget-store.js"></script>
 <script src="js/transaction-store.js"></script>
-<script src="js/goals.js"></script>
+<script src="js/budgets.js"></script>
 <script src="js/offline.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabase-config.js"></script>

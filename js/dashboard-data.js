@@ -11,8 +11,6 @@ const CATEGORY_COLOR_MAP = {
 
 // Your set monthly limits per category (AED). Spent amounts are now
 // calculated live from your real transactions, not hardcoded.
-const BUDGET_LIMITS = [];
-
 const MOCK = {
   wallets: {
     aed: { name: 'Dubai Wallet', balance: 0 },
