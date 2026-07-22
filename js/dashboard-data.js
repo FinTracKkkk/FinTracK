@@ -11,15 +11,11 @@ const CATEGORY_COLOR_MAP = {
 
 // Your set monthly limits per category (AED). Spent amounts are now
 // calculated live from your real transactions, not hardcoded.
-const BUDGET_LIMITS = [
-  { name: 'Food & Dining', limit: 1500 },
-  { name: 'Transport', limit: 600 },
-  { name: 'Shopping', limit: 1000 }
-];
+const BUDGET_LIMITS = [];
 
 const MOCK = {
   wallets: {
-    aed: { name: 'Dubai Wallet', balance: 8420, trend: +4.2 },
-    inr: { name: 'India Wallet', balance: 312500, trend: +1.1 }
+    aed: { name: 'Dubai Wallet', balance: 0 },
+    inr: { name: 'India Wallet', balance: 0 }
   }
 };

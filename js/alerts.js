@@ -5,11 +5,8 @@
    No AI involved — pure rule-based checks against your data.
    ============================================================ */
 
-// Fallback debts (mirrors debts.js defaults) in case debts.html hasn't been visited yet
-const ALERTS_FALLBACK_DEBTS = [
-  { direction: 'i_owe', person: 'Ali (colleague)', wallet: 'aed', remaining: 1200, due: '2026-08-05', priority: 'high' },
-  { direction: 'i_owe', person: 'Home rent advance', wallet: 'aed', remaining: 1000, due: '2026-08-15', priority: 'normal' }
-];
+// Fallback debts (used only if debts.html hasn't been visited yet, so localStorage has no ft_debts key)
+const ALERTS_FALLBACK_DEBTS = [];
 
 function getDebtsForAlerts() {
   const raw = localStorage.getItem('ft_debts');

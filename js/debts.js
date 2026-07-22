@@ -4,13 +4,7 @@
 
 const DEBT_STORE_KEY = 'ft_debts';
 
-const DEFAULT_DEBTS = [
-  { id: 1, direction: 'i_owe', person: 'Ali (colleague)', phone: '', wallet: 'aed', total: 1200, remaining: 1200, due: '2026-08-05', priority: 'high', notes: '', payments: [] },
-  { id: 2, direction: 'i_owe', person: 'Home rent advance', phone: '', wallet: 'aed', total: 1000, remaining: 1000, due: '2026-08-15', priority: 'normal', notes: '', payments: [] },
-  { id: 3, direction: 'owed_to_me', person: 'Rajeesh', phone: '', wallet: 'aed', total: 2000, remaining: 2000, due: '2026-08-01', priority: 'normal', notes: '', payments: [] },
-  { id: 4, direction: 'owed_to_me', person: 'Sanjay', phone: '', wallet: 'aed', total: 2400, remaining: 2400, due: '', priority: 'low', notes: '', payments: [] },
-  { id: 5, direction: 'owed_to_me', person: 'Cousin - India', phone: '', wallet: 'inr', total: 25000, remaining: 25000, due: '', priority: 'normal', notes: '', payments: [] }
-];
+const DEFAULT_DEBTS = [];
 
 let currentDirection = 'i_owe';
 let openDebtId = null;
@@ -133,11 +127,21 @@ function bindDrawer() {
   });
 }
 
-/* ---------- Add debt ---------- */
+let editingDebtId = null;
+
+/* ---------- Add / Edit debt ---------- */
 function bindAddForm() {
   const form = document.getElementById('addDebtForm');
   document.getElementById('addDebtBtn').addEventListener('click', () => {
+    editingDebtId = null;
+    document.getElementById('debtFormTitle').textContent = 'Add Debt';
+    document.getElementById('saveDebtBtn').textContent = 'Save Debt';
+    document.getElementById('deleteDebtBtn').style.display = 'none';
+    ['newPerson', 'newPhone', 'newAmount', 'newDue', 'newNotes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('newDirection').value = currentDirection;
+    document.getElementById('newPriority').value = 'normal';
+    newDebtWallet = 'aed';
+    document.querySelectorAll('#newWalletToggle button').forEach(b => b.classList.toggle('active', b.dataset.wallet === 'aed'));
     form.classList.add('open');
   });
   document.getElementById('addFormClose').addEventListener('click', () => form.classList.remove('open'));
@@ -157,19 +161,43 @@ function bindAddForm() {
     if (!total || total <= 0) { document.getElementById('newAmount').focus(); return; }
 
     const debts = getDebts();
-    debts.push({
-      id: Date.now(),
-      direction: document.getElementById('newDirection').value,
-      person,
-      phone: document.getElementById('newPhone').value.trim(),
-      wallet: newDebtWallet,
-      total,
-      remaining: total,
-      due: document.getElementById('newDue').value,
-      priority: document.getElementById('newPriority').value,
-      notes: document.getElementById('newNotes').value.trim(),
-      payments: []
-    });
+
+    if (editingDebtId) {
+      const idx = debts.findIndex(d => d.id === editingDebtId);
+      if (idx === -1) return;
+      const old = debts[idx];
+      const alreadyPaid = old.total - old.remaining;
+      // Preserve what's already been paid; only the outstanding portion changes with the new total
+      const newRemaining = Math.max(0, total - alreadyPaid);
+      debts[idx] = {
+        ...old,
+        direction: document.getElementById('newDirection').value,
+        person,
+        phone: document.getElementById('newPhone').value.trim(),
+        wallet: newDebtWallet,
+        total,
+        remaining: newRemaining,
+        due: document.getElementById('newDue').value,
+        priority: document.getElementById('newPriority').value,
+        notes: document.getElementById('newNotes').value.trim(),
+        synced: false
+      };
+    } else {
+      debts.push({
+        id: Date.now(),
+        direction: document.getElementById('newDirection').value,
+        person,
+        phone: document.getElementById('newPhone').value.trim(),
+        wallet: newDebtWallet,
+        total,
+        remaining: total,
+        due: document.getElementById('newDue').value,
+        priority: document.getElementById('newPriority').value,
+        notes: document.getElementById('newNotes').value.trim(),
+        payments: []
+      });
+    }
+
     saveDebts(debts);
 
     form.classList.remove('open');
@@ -177,6 +205,43 @@ function bindAddForm() {
     renderAll();
     if (typeof syncNow === 'function') syncNow();
   });
+
+  document.getElementById('deleteDebtBtn').addEventListener('click', () => {
+    if (!editingDebtId) return;
+    if (!confirm('Delete this debt? This cannot be undone.')) return;
+
+    const debts = getDebts().filter(d => d.id !== editingDebtId);
+    saveDebts(debts);
+
+    form.classList.remove('open');
+    editingDebtId = null;
+    renderAll();
+    if (typeof syncNow === 'function') syncNow();
+  });
+}
+
+function openEditDebt(id) {
+  const d = getDebts().find(x => x.id === id);
+  if (!d) return;
+
+  editingDebtId = id;
+  document.getElementById('debtFormTitle').textContent = 'Edit Debt';
+  document.getElementById('saveDebtBtn').textContent = 'Update Debt';
+  document.getElementById('deleteDebtBtn').style.display = 'block';
+
+  document.getElementById('newDirection').value = d.direction;
+  document.getElementById('newPerson').value = d.person;
+  document.getElementById('newAmount').value = d.total;
+  document.getElementById('newDue').value = d.due || '';
+  document.getElementById('newPriority').value = d.priority;
+  document.getElementById('newPhone').value = d.phone || '';
+  document.getElementById('newNotes').value = d.notes || '';
+
+  newDebtWallet = d.wallet;
+  document.querySelectorAll('#newWalletToggle button').forEach(b => b.classList.toggle('active', b.dataset.wallet === d.wallet));
+
+  document.getElementById('debtDetail').classList.remove('open');
+  document.getElementById('addDebtForm').classList.add('open');
 }
 
 /* ---------- Debt detail + payments ---------- */
@@ -230,6 +295,10 @@ function bindDetail() {
   document.getElementById('detailClose').addEventListener('click', () => {
     document.getElementById('debtDetail').classList.remove('open');
     openDebtId = null;
+  });
+
+  document.getElementById('editDebtBtn').addEventListener('click', () => {
+    if (openDebtId) openEditDebt(openDebtId);
   });
 
   document.querySelectorAll('#paymentWalletToggle button').forEach(btn => {

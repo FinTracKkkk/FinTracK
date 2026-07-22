@@ -4,10 +4,7 @@
 
 const GOALS_KEY = 'ft_goals';
 
-const DEFAULT_GOALS = [
-  { id: 1, name: 'Emergency Fund', target: 100000, current: 42000, wallet: 'inr', targetDate: '', needsSync: true },
-  { id: 2, name: 'New Laptop', target: 4000, current: 2100, wallet: 'aed', targetDate: '', needsSync: true }
-];
+const DEFAULT_GOALS = [];
 
 function getGoals() {
   const raw = localStorage.getItem(GOALS_KEY);

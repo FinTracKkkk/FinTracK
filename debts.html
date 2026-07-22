@@ -88,7 +88,7 @@
       <button class="icon-btn" id="addFormClose" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-      <div class="brand">Add Debt</div>
+      <div class="brand" id="debtFormTitle">Add Debt</div>
       <span style="width:40px;"></span>
     </header>
     <div class="form-body">
@@ -101,7 +101,7 @@
       </div>
       <div class="form-field">
         <label>Person's name</label>
-        <input type="text" id="newPerson" placeholder="e.g. Rajeesh">
+        <input type="text" id="newPerson" placeholder="Person's name">
       </div>
       <div class="form-field">
         <label>Amount</label>
@@ -139,6 +139,7 @@
     </div>
     <div class="form-footer">
       <button class="save-btn" id="saveDebtBtn">Save Debt</button>
+      <button class="delete-link" id="deleteDebtBtn" style="display:none;">Delete this debt</button>
     </div>
   </div>
 </div>
@@ -151,7 +152,9 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div class="brand">Debt Details</div>
-      <span style="width:40px;"></span>
+      <button class="icon-btn" id="editDebtBtn" aria-label="Edit">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
     </header>
 
     <div class="detail-hero">

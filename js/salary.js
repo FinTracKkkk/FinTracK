@@ -4,9 +4,7 @@
 
 const SALARY_STORE_KEY = 'ft_salary_entries';
 
-const DEFAULT_ENTRIES = [
-  { id: 1, wallet: 'aed', month: 'June 2026', base: 9000, bonus: 0, allowance: 500, side: 0, investment: 0, other: 0, notes: '' }
-];
+const DEFAULT_ENTRIES = [];
 
 function getSalaryEntries() {
   const raw = localStorage.getItem(SALARY_STORE_KEY);
@@ -25,8 +23,24 @@ function entryTotal(e) {
   return e.base + e.bonus + e.allowance + e.side + e.investment + e.other;
 }
 
+function updateSalaryEntry(id, updates) {
+  const entries = getSalaryEntries();
+  const idx = entries.findIndex(e => e.id === id);
+  if (idx === -1) return null;
+  entries[idx] = { ...entries[idx], ...updates, needsSync: true };
+  saveSalaryEntries(entries);
+  return entries[idx];
+}
+
+function deleteSalaryEntry(id) {
+  const entries = getSalaryEntries().filter(e => e.id !== id);
+  saveSalaryEntries(entries);
+}
+
+let editingSalaryId = null;
+
 document.addEventListener('DOMContentLoaded', () => {
-  initWalletStore({ aed: 8420, inr: 312500 }); // no-op if already set
+  initWalletStore({ aed: 0, inr: 0 }); // no-op if already set
   renderSalaryList();
   bindDrawer();
   bindForm();
@@ -56,7 +70,7 @@ function renderSalaryList() {
     if (e.investment) parts.push(`<span>Investment: <b>${sym}${e.investment.toLocaleString('en-IN')}</b></span>`);
     if (e.other) parts.push(`<span>Other: <b>${sym}${e.other.toLocaleString('en-IN')}</b></span>`);
     return `
-      <div class="entry-card">
+      <div class="entry-card" data-id="${e.id}">
         <div class="entry-head">
           <span class="e-month">${e.month}</span>
           <span class="e-wallet">${e.wallet === 'aed' ? '🇦🇪 Dubai' : '🇮🇳 India'}</span>
@@ -66,6 +80,10 @@ function renderSalaryList() {
       </div>
     `;
   }).join('');
+
+  listEl.querySelectorAll('.entry-card').forEach(card => {
+    card.addEventListener('click', () => openEditSalary(parseInt(card.dataset.id)));
+  });
 }
 
 function bindDrawer() {
@@ -83,7 +101,14 @@ function bindDrawer() {
 
 function bindForm() {
   const form = document.getElementById('salaryForm');
-  document.getElementById('addSalaryBtn').addEventListener('click', () => form.classList.add('open'));
+  document.getElementById('addSalaryBtn').addEventListener('click', () => {
+    editingSalaryId = null;
+    document.getElementById('salaryFormTitle').textContent = 'Add Salary';
+    document.getElementById('saveSalaryBtn').textContent = 'Save Salary Entry';
+    document.getElementById('deleteSalaryBtn').style.display = 'none';
+    resetForm();
+    form.classList.add('open');
+  });
   document.getElementById('formClose').addEventListener('click', () => form.classList.remove('open'));
 
   const fields = ['baseInput', 'bonusInput', 'allowanceInput', 'sideInput', 'investmentInput', 'otherInput'];
@@ -96,8 +121,7 @@ function bindForm() {
     const wallet = document.getElementById('walletSelect').value;
     const monthLabel = new Date(monthInput + '-02').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-    const entry = {
-      id: Date.now(),
+    const fieldsData = {
       wallet,
       month: monthLabel,
       monthIso: monthInput + '-01',
@@ -110,20 +134,64 @@ function bindForm() {
       notes: document.getElementById('salaryNotesInput').value.trim()
     };
 
-    const total = entryTotal(entry);
+    const total = entryTotal(fieldsData);
     if (total <= 0) { alert('Enter at least one income amount.'); return; }
 
-    const entries = getSalaryEntries();
-    entries.push(entry);
-    saveSalaryEntries(entries);
-
-    adjustWalletBalance(wallet, total);
+    if (editingSalaryId) {
+      // Reverse the old entry's effect on its wallet balance, then apply the new total
+      const old = getSalaryEntries().find(e => e.id === editingSalaryId);
+      if (old) adjustWalletBalance(old.wallet, -entryTotal(old));
+      updateSalaryEntry(editingSalaryId, fieldsData);
+      adjustWalletBalance(wallet, total);
+    } else {
+      const entries = getSalaryEntries();
+      entries.push({ id: Date.now(), needsSync: true, ...fieldsData });
+      saveSalaryEntries(entries);
+      adjustWalletBalance(wallet, total);
+    }
 
     form.classList.remove('open');
     resetForm();
     renderSalaryList();
     if (typeof syncNow === 'function') syncNow();
   });
+
+  document.getElementById('deleteSalaryBtn').addEventListener('click', () => {
+    if (!editingSalaryId) return;
+    if (!confirm('Delete this salary entry? This cannot be undone.')) return;
+
+    const old = getSalaryEntries().find(e => e.id === editingSalaryId);
+    if (old) adjustWalletBalance(old.wallet, -entryTotal(old));
+    deleteSalaryEntry(editingSalaryId);
+
+    form.classList.remove('open');
+    resetForm();
+    renderSalaryList();
+    if (typeof syncNow === 'function') syncNow();
+  });
+}
+
+function openEditSalary(id) {
+  const entry = getSalaryEntries().find(e => e.id === id);
+  if (!entry) return;
+
+  editingSalaryId = id;
+  document.getElementById('salaryFormTitle').textContent = 'Edit Salary Entry';
+  document.getElementById('saveSalaryBtn').textContent = 'Update Entry';
+  document.getElementById('deleteSalaryBtn').style.display = 'block';
+
+  document.getElementById('monthInput').value = entry.monthIso ? entry.monthIso.slice(0, 7) : '';
+  document.getElementById('walletSelect').value = entry.wallet;
+  document.getElementById('baseInput').value = entry.base || '';
+  document.getElementById('bonusInput').value = entry.bonus || '';
+  document.getElementById('allowanceInput').value = entry.allowance || '';
+  document.getElementById('sideInput').value = entry.side || '';
+  document.getElementById('investmentInput').value = entry.investment || '';
+  document.getElementById('otherInput').value = entry.other || '';
+  document.getElementById('salaryNotesInput').value = entry.notes || '';
+  updateTotalPreview();
+
+  document.getElementById('salaryForm').classList.add('open');
 }
 
 function updateTotalPreview() {

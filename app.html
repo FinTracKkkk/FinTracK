@@ -143,7 +143,7 @@
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-head">
-    <h3>Add Transaction</h3>
+    <h3 id="sheetTitle">Add Transaction</h3>
     <button class="sheet-close" id="sheetClose" aria-label="Close">✕</button>
   </div>
 
@@ -169,7 +169,7 @@
   <div class="details-panel" id="detailsPanel">
     <div class="field" style="margin-bottom:14px;">
       <label>Description</label>
-      <input type="text" id="descInput" placeholder="e.g. Carrefour groceries">
+      <input type="text" id="descInput" placeholder="What's this for?">
     </div>
 
     <div class="receipt-row">
@@ -189,6 +189,7 @@
 
   <div class="sheet-footer">
     <button class="save-btn" id="saveBtn">Save Transaction</button>
+    <button class="delete-link" id="deleteTxBtn" style="display:none;">Delete this transaction</button>
   </div>
 </div>
 

@@ -97,6 +97,11 @@ function renderBudgets() {
   const now = new Date();
   const spentByCategory = {};
 
+  if (BUDGET_LIMITS.length === 0) {
+    el.innerHTML = '<div class="empty-state">No budgets set yet.</div>';
+    return;
+  }
+
   getTransactions().forEach(t => {
     if (t.wallet !== 'aed' || t.type !== 'expense') return;
     const d = new Date(t.date);
@@ -194,8 +199,14 @@ function renderDonut() {
 function renderTransactions() {
   const el = document.getElementById('txList');
   const txs = getTransactions().slice(0, 8);
+
+  if (txs.length === 0) {
+    el.innerHTML = '<div class="empty-state">No transactions yet — tap + to add your first one.</div>';
+    return;
+  }
+
   el.innerHTML = txs.map(t => `
-    <div class="tx-item">
+    <div class="tx-item" data-id="${t.id}" style="cursor:pointer;">
       <div class="tx-icon">${t.icon}</div>
       <div class="tx-info">
         <div class="t-name">${t.description}</div>
@@ -204,6 +215,12 @@ function renderTransactions() {
       <div class="tx-amount ${t.type}">${t.amount < 0 ? '−' : '+'}${fmt(Math.abs(t.amount), t.currency)}</div>
     </div>
   `).join('');
+
+  el.querySelectorAll('.tx-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (typeof openSheetForEdit === 'function') openSheetForEdit(item.dataset.id);
+    });
+  });
 }
 
 function relativeTime(iso) {

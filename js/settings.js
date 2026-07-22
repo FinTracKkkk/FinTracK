@@ -128,13 +128,14 @@ function bindBackupRestore() {
 /* ---------- Reset app ---------- */
 function bindReset() {
   const modal = document.getElementById('resetModal');
-  const input = document.getElementById('resetConfirmInput');
+  const input = document.getElementById('resetPinInput');
   const msg = document.getElementById('resetMsg');
   const confirmBtn = document.getElementById('resetConfirmBtn');
 
   document.getElementById('resetBtn').addEventListener('click', () => {
     input.value = '';
     msg.textContent = '';
+    confirmBtn.disabled = false;
     modal.classList.remove('hidden');
     input.focus();
   });
@@ -143,9 +144,18 @@ function bindReset() {
     modal.classList.add('hidden');
   });
 
-  confirmBtn.addEventListener('click', () => {
-    if (input.value.trim().toUpperCase() !== 'RESET') {
-      msg.textContent = 'Type RESET exactly (all caps) to confirm.';
+  confirmBtn.addEventListener('click', async () => {
+    const pin = input.value.trim();
+    if (!/^\d{4}$/.test(pin)) {
+      msg.textContent = 'Enter your 4-digit PIN.';
+      msg.className = 'modal-msg error';
+      return;
+    }
+
+    const enteredHash = await sha256(pin);
+    const storedHash = localStorage.getItem('ft_pin_hash');
+    if (enteredHash !== storedHash) {
+      msg.textContent = 'Incorrect PIN.';
       msg.className = 'modal-msg error';
       return;
     }

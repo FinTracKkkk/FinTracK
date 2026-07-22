@@ -52,9 +52,19 @@ function renderGoalsList() {
   });
 }
 
+let editingGoalId = null;
+
 function bindAddForm() {
   const form = document.getElementById('addGoalForm');
-  document.getElementById('addGoalBtn').addEventListener('click', () => form.classList.add('open'));
+  document.getElementById('addGoalBtn').addEventListener('click', () => {
+    editingGoalId = null;
+    document.getElementById('goalFormTitle').textContent = 'New Goal';
+    document.getElementById('saveGoalBtn').textContent = 'Save Goal';
+    document.getElementById('deleteGoalBtn').style.display = 'none';
+    ['newGoalName', 'newGoalTarget', 'newGoalCurrent', 'newGoalDate'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('newGoalWallet').value = 'aed';
+    form.classList.add('open');
+  });
   document.getElementById('addFormClose').addEventListener('click', () => form.classList.remove('open'));
 
   document.getElementById('saveGoalBtn').addEventListener('click', () => {
@@ -63,16 +73,22 @@ function bindAddForm() {
     if (!name) { document.getElementById('newGoalName').focus(); return; }
     if (!target || target <= 0) { document.getElementById('newGoalTarget').focus(); return; }
 
-    const goals = getGoals();
-    goals.push({
-      id: Date.now(),
+    const fields = {
       name,
       target,
       current: parseFloat(document.getElementById('newGoalCurrent').value) || 0,
       wallet: document.getElementById('newGoalWallet').value,
       targetDate: document.getElementById('newGoalDate').value,
       needsSync: true
-    });
+    };
+
+    const goals = getGoals();
+    if (editingGoalId) {
+      const idx = goals.findIndex(g => g.id === editingGoalId);
+      if (idx !== -1) goals[idx] = { ...goals[idx], ...fields };
+    } else {
+      goals.push({ id: Date.now(), ...fields });
+    }
     saveGoals(goals);
 
     form.classList.remove('open');
@@ -80,6 +96,38 @@ function bindAddForm() {
     renderGoalsList();
     if (typeof syncNow === 'function') syncNow();
   });
+
+  document.getElementById('deleteGoalBtn').addEventListener('click', () => {
+    if (!editingGoalId) return;
+    if (!confirm('Delete this savings goal? This cannot be undone.')) return;
+
+    const goals = getGoals().filter(g => g.id !== editingGoalId);
+    saveGoals(goals);
+
+    form.classList.remove('open');
+    editingGoalId = null;
+    renderGoalsList();
+    if (typeof syncNow === 'function') syncNow();
+  });
+}
+
+function openEditGoal(id) {
+  const g = getGoals().find(x => x.id === id);
+  if (!g) return;
+
+  editingGoalId = id;
+  document.getElementById('goalFormTitle').textContent = 'Edit Goal';
+  document.getElementById('saveGoalBtn').textContent = 'Update Goal';
+  document.getElementById('deleteGoalBtn').style.display = 'block';
+
+  document.getElementById('newGoalName').value = g.name;
+  document.getElementById('newGoalTarget').value = g.target;
+  document.getElementById('newGoalCurrent').value = g.current;
+  document.getElementById('newGoalWallet').value = g.wallet;
+  document.getElementById('newGoalDate').value = g.targetDate || '';
+
+  document.getElementById('goalDetail').classList.remove('open');
+  document.getElementById('addGoalForm').classList.add('open');
 }
 
 function openDetail(id) {
@@ -104,6 +152,10 @@ function bindDetail() {
   document.getElementById('detailClose').addEventListener('click', () => {
     document.getElementById('goalDetail').classList.remove('open');
     openGoalId = null;
+  });
+
+  document.getElementById('editGoalBtn').addEventListener('click', () => {
+    if (openGoalId) openEditGoal(openGoalId);
   });
 
   document.getElementById('contributeBtn').addEventListener('click', () => {

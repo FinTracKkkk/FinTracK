@@ -25,6 +25,7 @@ let qaType = 'expense';
 let qaWallet = 'aed';
 let qaCategory = null;
 let qaReceiptDataUrl = null;
+let editingTxId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('fabBtn').addEventListener('click', openSheet);
@@ -59,14 +60,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('receiptInput').addEventListener('change', handleReceiptSelect);
   document.getElementById('saveBtn').addEventListener('click', saveTransaction);
+  document.getElementById('deleteTxBtn').addEventListener('click', deleteCurrentTransaction);
 
   renderCategoryGrid();
 });
 
 function openSheet() {
+  editingTxId = null;
+  document.getElementById('sheetTitle').textContent = 'Add Transaction';
+  document.getElementById('saveBtn').textContent = 'Save Transaction';
+  document.getElementById('deleteTxBtn').style.display = 'none';
   document.getElementById('sheet').classList.add('open');
   document.getElementById('sheetBackdrop').classList.add('open');
   document.getElementById('amountInput').focus();
+}
+
+// Opens the same sheet pre-filled with an existing transaction's data for editing.
+function openSheetForEdit(id) {
+  const tx = getTransactionById(id);
+  if (!tx) return;
+
+  editingTxId = id;
+  qaType = tx.type;
+  qaWallet = tx.wallet;
+  qaCategory = tx.category;
+  qaReceiptDataUrl = tx.receipt || null;
+
+  document.getElementById('sheetTitle').textContent = 'Edit Transaction';
+  document.getElementById('saveBtn').textContent = 'Update Transaction';
+  document.getElementById('deleteTxBtn').style.display = 'block';
+
+  document.querySelectorAll('.type-toggle button').forEach(b => b.classList.remove('active', 'expense', 'income'));
+  const typeBtn = document.querySelector(`.type-toggle button[data-type="${tx.type}"]`);
+  typeBtn.classList.add('active', tx.type);
+
+  document.querySelectorAll('.wallet-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.wallet-chip[data-wallet="${tx.wallet}"]`).classList.add('active');
+  document.getElementById('curSymbol').textContent = tx.wallet === 'aed' ? 'AED' : '₹';
+
+  document.getElementById('amountInput').value = Math.abs(tx.amount);
+  document.getElementById('descInput').value = tx.description || '';
+  document.getElementById('notesInput').value = tx.notes || '';
+
+  if (tx.description || tx.notes || tx.receipt) {
+    document.getElementById('detailsPanel').classList.add('open');
+    document.getElementById('detailsToggle').textContent = 'Hide details';
+  }
+
+  if (tx.receipt) {
+    document.getElementById('receiptPreviewWrap').innerHTML = `
+      <div class="receipt-thumb-wrap">
+        <img class="receipt-thumb" src="${tx.receipt}" alt="Receipt preview">
+        <button class="receipt-remove" id="removeReceipt">✕</button>
+      </div>
+    `;
+    document.getElementById('removeReceipt').addEventListener('click', () => {
+      qaReceiptDataUrl = null;
+      document.getElementById('receiptPreviewWrap').innerHTML = '';
+    });
+  }
+
+  renderCategoryGrid();
+
+  document.getElementById('sheet').classList.add('open');
+  document.getElementById('sheetBackdrop').classList.add('open');
 }
 
 function closeSheet() {
@@ -81,9 +138,13 @@ function resetSheet() {
   document.getElementById('notesInput').value = '';
   qaCategory = null;
   qaReceiptDataUrl = null;
+  editingTxId = null;
   document.getElementById('receiptPreviewWrap').innerHTML = '';
   document.getElementById('detailsPanel').classList.remove('open');
   document.getElementById('detailsToggle').textContent = 'Add details (payment method, notes, date...)';
+  document.getElementById('sheetTitle').textContent = 'Add Transaction';
+  document.getElementById('saveBtn').textContent = 'Save Transaction';
+  document.getElementById('deleteTxBtn').style.display = 'none';
   renderCategoryGrid();
 }
 
@@ -140,7 +201,7 @@ function saveTransaction() {
   const desc = document.getElementById('descInput').value.trim() || qaCategory;
   const currency = qaWallet === 'aed' ? 'AED' : 'INR';
 
-  addTransaction({
+  const fields = {
     wallet: qaWallet,
     type: qaType,
     category: qaCategory,
@@ -148,10 +209,22 @@ function saveTransaction() {
     description: desc,
     amount: qaType === 'expense' ? -amount : amount,
     currency,
-    date: new Date().toISOString(),
     receipt: qaReceiptDataUrl,
     notes: document.getElementById('notesInput').value.trim()
-  });
+  };
+
+  if (editingTxId) {
+    // Reverse the old transaction's effect on its wallet balance before applying the new one
+    const old = getTransactionById(editingTxId);
+    if (old) {
+      if (old.type === 'expense') adjustWalletBalance(old.wallet, Math.abs(old.amount));
+      else adjustWalletBalance(old.wallet, -Math.abs(old.amount));
+    }
+    updateTransaction(editingTxId, fields);
+  } else {
+    fields.date = new Date().toISOString();
+    addTransaction(fields);
+  }
 
   if (qaType === 'expense') {
     adjustWalletBalance(qaWallet, -amount);
@@ -165,8 +238,32 @@ function saveTransaction() {
   renderDonut();
   renderBudgets();
 
+  const wasEditing = !!editingTxId;
   closeSheet();
-  showToast(`${qaType === 'expense' ? 'Expense' : 'Income'} saved`);
+  showToast(wasEditing ? 'Transaction updated' : `${qaType === 'expense' ? 'Expense' : 'Income'} saved`);
+  if (typeof syncNow === 'function') syncNow();
+}
+
+function deleteCurrentTransaction() {
+  if (!editingTxId) return;
+  if (!confirm('Delete this transaction? This cannot be undone.')) return;
+
+  const tx = getTransactionById(editingTxId);
+  if (tx) {
+    // Reverse its effect on the wallet balance before removing it
+    if (tx.type === 'expense') adjustWalletBalance(tx.wallet, Math.abs(tx.amount));
+    else adjustWalletBalance(tx.wallet, -Math.abs(tx.amount));
+  }
+  deleteTransaction(editingTxId);
+
+  renderWalletCards();
+  renderStats();
+  renderTransactions();
+  renderDonut();
+  renderBudgets();
+
+  closeSheet();
+  showToast('Transaction deleted');
   if (typeof syncNow === 'function') syncNow();
 }
 
