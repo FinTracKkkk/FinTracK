@@ -14,6 +14,8 @@ const DEFAULT_DEBTS = [
 
 let currentDirection = 'i_owe';
 let openDebtId = null;
+let newDebtWallet = 'aed';
+let paymentWallet = 'aed';
 
 function getDebts() {
   const raw = localStorage.getItem(DEBT_STORE_KEY);
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderAll() {
   renderSummary();
   renderList();
-  document.querySelectorAll('.debt-toggle button').forEach(b =>
+  document.querySelectorAll('#directionToggle button').forEach(b =>
     b.classList.toggle('active', b.dataset.dir === currentDirection));
   document.getElementById('drawerOwe').classList.toggle('active', currentDirection === 'i_owe');
   document.getElementById('drawerReceive').classList.toggle('active', currentDirection === 'owed_to_me');
@@ -112,7 +114,7 @@ function renderList() {
 }
 
 function bindToggle() {
-  document.querySelectorAll('.debt-toggle button').forEach(btn => {
+  document.querySelectorAll('#directionToggle button').forEach(btn => {
     btn.addEventListener('click', () => {
       currentDirection = btn.dataset.dir;
       renderAll();
@@ -140,6 +142,14 @@ function bindAddForm() {
   });
   document.getElementById('addFormClose').addEventListener('click', () => form.classList.remove('open'));
 
+  document.querySelectorAll('#newWalletToggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      newDebtWallet = btn.dataset.wallet;
+      document.querySelectorAll('#newWalletToggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
   document.getElementById('saveDebtBtn').addEventListener('click', () => {
     const person = document.getElementById('newPerson').value.trim();
     const total = parseFloat(document.getElementById('newAmount').value);
@@ -152,7 +162,7 @@ function bindAddForm() {
       direction: document.getElementById('newDirection').value,
       person,
       phone: document.getElementById('newPhone').value.trim(),
-      wallet: document.getElementById('newWallet').value,
+      wallet: newDebtWallet,
       total,
       remaining: total,
       due: document.getElementById('newDue').value,
@@ -186,6 +196,12 @@ function openDetail(id) {
   document.getElementById('detailPct').textContent = pct + '% paid';
 
   renderPaymentHistory(d);
+
+  // Default the payment currency toggle to this debt's own currency
+  paymentWallet = d.wallet;
+  document.querySelectorAll('#paymentWalletToggle button').forEach(b =>
+    b.classList.toggle('active', b.dataset.wallet === d.wallet));
+
   document.getElementById('debtDetail').classList.add('open');
 }
 
@@ -195,21 +211,32 @@ function renderPaymentHistory(d) {
     el.innerHTML = '<div class="empty-state">No payments logged yet.</div>';
     return;
   }
-  el.innerHTML = d.payments.slice().reverse().map(p => `
+  el.innerHTML = d.payments.slice().reverse().map(p => {
+    const sym = (p.currency || d.wallet) === 'aed' ? 'AED ' : '₹';
+    return `
     <div class="payment-item">
       <div>
         <div class="p-date">${new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
         ${p.notes ? `<div class="p-notes">${p.notes}</div>` : ''}
       </div>
-      <div class="p-amount">+${p.amount.toLocaleString('en-IN')}</div>
+      <div class="p-amount">+${sym}${p.amount.toLocaleString('en-IN')}</div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function bindDetail() {
   document.getElementById('detailClose').addEventListener('click', () => {
     document.getElementById('debtDetail').classList.remove('open');
     openDebtId = null;
+  });
+
+  document.querySelectorAll('#paymentWalletToggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      paymentWallet = btn.dataset.wallet;
+      document.querySelectorAll('#paymentWalletToggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
   });
 
   document.getElementById('logPaymentBtn').addEventListener('click', () => {
@@ -222,7 +249,7 @@ function bindDetail() {
 
     const applied = Math.min(amount, d.remaining);
     d.remaining -= applied;
-    d.payments.push({ amount: applied, date: new Date().toISOString(), notes: '' });
+    d.payments.push({ amount: applied, currency: paymentWallet, date: new Date().toISOString(), notes: '' });
 
     saveDebts(debts);
     document.getElementById('paymentAmountInput').value = '';
