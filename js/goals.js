@@ -78,6 +78,7 @@ function bindAddForm() {
     form.classList.remove('open');
     ['newGoalName', 'newGoalTarget', 'newGoalCurrent', 'newGoalDate'].forEach(id => document.getElementById(id).value = '');
     renderGoalsList();
+    if (typeof syncNow === 'function') syncNow();
   });
 }
 
@@ -112,5 +113,6 @@ function bindDetail() {
     document.getElementById('contributeAmountInput').value = '';
     openDetail(openGoalId);
     renderGoalsList();
+    if (typeof syncNow === 'function') syncNow();
   });
 }

@@ -122,6 +122,7 @@ function bindForm() {
     form.classList.remove('open');
     resetForm();
     renderSalaryList();
+    if (typeof syncNow === 'function') syncNow();
   });
 }
 

@@ -127,12 +127,38 @@ function bindBackupRestore() {
 
 /* ---------- Reset app ---------- */
 function bindReset() {
+  const modal = document.getElementById('resetModal');
+  const input = document.getElementById('resetConfirmInput');
+  const msg = document.getElementById('resetMsg');
+  const confirmBtn = document.getElementById('resetConfirmBtn');
+
   document.getElementById('resetBtn').addEventListener('click', () => {
-    if (!confirm('This will permanently erase all local FinTrack data on this device (wallets, transactions, debts, salary, settings). This cannot be undone. Continue?')) return;
-    if (!confirm('Are you absolutely sure? Type OK to confirm final reset.')) return;
-    Object.keys(localStorage).forEach(k => {
-      if (k.startsWith(FT_KEYS_PREFIX)) localStorage.removeItem(k);
-    });
-    window.location.href = 'index.html';
+    input.value = '';
+    msg.textContent = '';
+    modal.classList.remove('hidden');
+    input.focus();
+  });
+
+  document.getElementById('resetCancel').addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
+
+  confirmBtn.addEventListener('click', () => {
+    if (input.value.trim().toUpperCase() !== 'RESET') {
+      msg.textContent = 'Type RESET exactly (all caps) to confirm.';
+      msg.className = 'modal-msg error';
+      return;
+    }
+
+    const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith(FT_KEYS_PREFIX));
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+
+    msg.textContent = `Erased ${keysToRemove.length} item(s). Redirecting...`;
+    msg.className = 'modal-msg success';
+    confirmBtn.disabled = true;
+
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 900);
   });
 }

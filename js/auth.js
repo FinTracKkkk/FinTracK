@@ -35,6 +35,13 @@ applyStoredTheme();
 
 // ---------- Init ----------
 async function initAuth() {
+  // This entire login flow only applies to the login page itself (index.html),
+  // which is the only page with a #keypad element. Every other page also loads
+  // auth.js (for logout/lock/theme/refresh helpers), so without this guard the
+  // remember-me redirect below would fire on EVERY page load and silently
+  // bounce the user back to the Dashboard — which is exactly what was happening.
+  if (!document.getElementById('keypad')) return;
+
   // First run: set default PIN hash if none exists
   if (!localStorage.getItem('ft_pin_hash')) {
     const hash = await sha256(DEFAULT_PIN);

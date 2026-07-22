@@ -33,7 +33,7 @@ function initials(name) {
 
 function statusOf(d) {
   if (d.remaining <= 0) return 'settled';
-  if (d.due && new Date(d.due) < new Date() && d.due) return 'overdue';
+  if (d.due && new Date(d.due) < new Date()) return 'overdue';
   if (d.remaining < d.total) return 'partially_paid';
   return 'open';
 }
@@ -175,6 +175,7 @@ function bindAddForm() {
     form.classList.remove('open');
     ['newPerson', 'newPhone', 'newAmount', 'newDue', 'newNotes'].forEach(id => document.getElementById(id).value = '');
     renderAll();
+    if (typeof syncNow === 'function') syncNow();
   });
 }
 
@@ -255,5 +256,6 @@ function bindDetail() {
     document.getElementById('paymentAmountInput').value = '';
     openDetail(openDebtId);
     renderAll();
+    if (typeof syncNow === 'function') syncNow();
   });
 }

@@ -205,7 +205,25 @@
   </div>
 </div>
 
+<!-- Reset App confirmation modal -->
+<div class="modal-backdrop hidden" id="resetModal">
+  <div class="modal">
+    <h3>Reset FinTrack?</h3>
+    <p>This permanently erases every wallet, transaction, debt, salary entry, goal, and setting stored on this device. This cannot be undone. Data already synced to Supabase is not affected.</p>
+    <div class="field">
+      <label>Type <b>RESET</b> to confirm</label>
+      <input type="text" id="resetConfirmInput" placeholder="RESET" autocomplete="off" autocapitalize="characters">
+    </div>
+    <div class="modal-msg" id="resetMsg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="resetCancel">Cancel</button>
+      <button class="btn btn-primary" id="resetConfirmBtn" style="background:var(--negative);">Erase Everything</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/auth.js"></script>
+<script src="js/transaction-store.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/offline.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>

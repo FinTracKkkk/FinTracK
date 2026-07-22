@@ -167,6 +167,7 @@ function saveTransaction() {
 
   closeSheet();
   showToast(`${qaType === 'expense' ? 'Expense' : 'Income'} saved`);
+  if (typeof syncNow === 'function') syncNow();
 }
 
 function showToast(msg) {
