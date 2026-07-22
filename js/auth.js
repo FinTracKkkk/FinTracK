@@ -232,3 +232,10 @@ function lockApp() {
 }
 
 document.addEventListener('DOMContentLoaded', initAuth);
+
+// ---------- Refresh button (shared across every page) ----------
+// Reloads the current page in place — same URL, same screen, freshest data.
+document.addEventListener('DOMContentLoaded', () => {
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) refreshBtn.addEventListener('click', () => window.location.reload());
+});
