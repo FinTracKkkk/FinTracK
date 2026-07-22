@@ -1,0 +1,114 @@
+/* ============================================================
+   FinTrack — Design Tokens
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Brand palette (from logo) */
+  --navy: #0D1321;
+  --navy-soft: #141B2E;
+  --slate: #334155;
+  --slate-light: #64748B;
+  --emerald: #2E7D6B;
+  --gold: #D4AF37;
+  --off-white: #F3F4F6;
+
+  /* Semantic */
+  --bg: var(--navy);
+  --bg-elevated: var(--navy-soft);
+  --text-primary: var(--off-white);
+  --text-secondary: #9AA3B2;
+  --accent: var(--gold);
+  --positive: var(--emerald);
+  --negative: #C05B4D;
+  --border: rgba(243, 244, 246, 0.08);
+
+  /* Type */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Radius / motion */
+  --radius: 18px;
+  --radius-sm: 10px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+body {
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Signature background motif — faint ascending bars echoing the logo,
+   present quietly across every screen of the app */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, transparent 0%, var(--navy) 85%),
+    repeating-linear-gradient(
+      100deg,
+      transparent 0px,
+      transparent 60px,
+      rgba(255,255,255,0.015) 60px,
+      rgba(255,255,255,0.015) 62px
+    );
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------- Light theme override (toggled via Settings) ---------- */
+body.light-theme {
+  --bg: #F3F4F6;
+  --bg-elevated: #FFFFFF;
+  --text-primary: #0D1321;
+  --text-secondary: #5B6472;
+  --border: rgba(13,19,33,0.08);
+}
+body.light-theme::before { display: none; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+}

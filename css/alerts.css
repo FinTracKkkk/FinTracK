@@ -1,0 +1,51 @@
+/* ============================================================
+   FinTrack — Alerts
+   ============================================================ */
+
+.bell-wrap { position: relative; }
+.bell-badge {
+  position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; padding: 0 3px;
+  border-radius: 999px; background: var(--negative); color: #fff; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; border: 2px solid var(--navy);
+}
+
+.alert-panel-backdrop {
+  position: fixed; inset: 0; z-index: 24; background: transparent;
+  display: none;
+}
+.alert-panel-backdrop.open { display: block; }
+
+.alert-panel {
+  position: fixed; top: 66px; right: 16px; z-index: 25; width: min(320px, calc(100vw - 32px));
+  background: var(--navy-soft); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  max-height: 70vh; overflow-y: auto;
+  transform: translateY(-8px); opacity: 0; pointer-events: none; transition: all .2s var(--ease);
+}
+.alert-panel.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+.alert-panel-head {
+  padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600;
+}
+
+.alert-item { display: flex; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.alert-item:last-child { border-bottom: none; }
+.alert-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.alert-dot.red { background: var(--negative); }
+.alert-dot.orange { background: var(--gold); }
+.alert-dot.green { background: var(--positive); }
+.alert-text { font-size: 12.5px; line-height: 1.4; color: var(--text-primary); }
+
+.alert-empty { padding: 24px 16px; text-align: center; font-size: 12.5px; color: var(--text-secondary); }
+
+/* Temporary toast banner (auto-dismiss) */
+.alert-toast {
+  position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-20px);
+  z-index: 50; max-width: calc(100vw - 32px);
+  background: var(--navy-soft); border: 1px solid var(--border); border-left: 3px solid var(--negative);
+  border-radius: var(--radius-sm); padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  opacity: 0; pointer-events: none; transition: all .3s var(--ease);
+}
+.alert-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.alert-toast .at-text { font-size: 12.5px; }

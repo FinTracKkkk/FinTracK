@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D1321">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>FinTrack — Login</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<main class="auth-screen">
+
+  <!-- Logo mark: ascending bars + swoosh, matches brand -->
+  <svg class="logo-mark" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="6" y="34" width="12" height="22" fill="#D4AF37"/>
+    <rect x="22" y="20" width="12" height="36" fill="#64748B"/>
+    <rect x="38" y="6" width="12" height="50" fill="#F3F4F6"/>
+    <path d="M4 58 C 20 58, 30 40, 56 8" stroke="#0D1321" stroke-width="5" stroke-linecap="round"/>
+  </svg>
+
+  <h1 class="wordmark">Fin<span>Track</span></h1>
+  <p class="tagline">Track Today, Grow Tomorrow</p>
+
+  <div class="pin-card">
+    <p class="pin-label" id="pinLabel">Enter your PIN</p>
+
+    <div class="pin-dots" id="pinDots">
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+
+    <div class="keypad" id="keypad">
+      <button class="key" data-key="1">1</button>
+      <button class="key" data-key="2">2</button>
+      <button class="key" data-key="3">3</button>
+      <button class="key" data-key="4">4</button>
+      <button class="key" data-key="5">5</button>
+      <button class="key" data-key="6">6</button>
+      <button class="key" data-key="7">7</button>
+      <button class="key" data-key="8">8</button>
+      <button class="key" data-key="9">9</button>
+      <button class="key key-ghost" tabindex="-1"></button>
+      <button class="key" data-key="0">0</button>
+      <button class="key key-backspace" data-key="back" aria-label="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+      </button>
+    </div>
+
+    <div class="auth-footer">
+      <label class="remember-row">
+        <input type="checkbox" id="rememberMe">
+        Remember me for 7 days
+      </label>
+      <button class="link-btn" id="forgotBtn">Forgot PIN?</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- Forgot PIN modal -->
+<div class="modal-backdrop hidden" id="forgotModal">
+  <div class="modal">
+    <h3>Reset your PIN</h3>
+    <p id="forgotStep1Text">Answer your recovery question to reset your PIN.</p>
+
+    <div id="forgotStep1">
+      <div class="field">
+        <label id="recoveryQuestionLabel">Recovery question</label>
+        <input type="text" id="recoveryAnswerInput" placeholder="Your answer" autocomplete="off">
+      </div>
+      <div class="modal-msg error" id="forgotError"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="forgotCancel1">Cancel</button>
+        <button class="btn btn-primary" id="forgotVerify">Verify</button>
+      </div>
+    </div>
+
+    <div id="forgotStep2" style="display:none;">
+      <div class="field">
+        <label>New 4-digit PIN</label>
+        <input type="password" id="newPinInput" inputmode="numeric" maxlength="4" placeholder="••••">
+      </div>
+      <div class="field">
+        <label>Confirm new PIN</label>
+        <input type="password" id="confirmPinInput" inputmode="numeric" maxlength="4" placeholder="••••">
+      </div>
+      <div class="modal-msg error" id="forgotError2"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="forgotCancel2">Cancel</button>
+        <button class="btn btn-primary" id="forgotSave">Save PIN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- First-run setup modal: set recovery question -->
+<div class="modal-backdrop hidden" id="setupModal">
+  <div class="modal">
+    <h3>Set a recovery question</h3>
+    <p>This lets you reset your PIN later if you forget it. You can skip, but you won't be able to recover access without it.</p>
+    <div class="field">
+      <label>Recovery question</label>
+      <input type="text" id="setupQuestion" placeholder="e.g. What was your first pet's name?">
+    </div>
+    <div class="field">
+      <label>Answer</label>
+      <input type="text" id="setupAnswer" placeholder="Your answer" autocomplete="off">
+    </div>
+    <div class="modal-msg error" id="setupError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="setupSkip">Skip</button>
+      <button class="btn btn-primary" id="setupSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>

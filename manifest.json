@@ -1,0 +1,16 @@
+{
+  "name": "FinTrack",
+  "short_name": "FinTrack",
+  "description": "Track Today, Grow Tomorrow — personal expense, salary, debt and savings tracker for Dubai and India.",
+  "start_url": "index.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D1321",
+  "theme_color": "#0D1321",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

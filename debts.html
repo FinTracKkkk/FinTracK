@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D1321">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>FinTrack — Debts</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/salary.css">
+<link rel="stylesheet" href="css/debts.css">
+</head>
+<body>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head" style="display:flex;align-items:center;gap:10px;">
+    <svg viewBox="0 0 64 64" fill="none" style="width:32px;height:32px;flex-shrink:0;">
+      <rect x="6" y="34" width="12" height="22" fill="#D4AF37"/>
+      <rect x="22" y="20" width="12" height="36" fill="#64748B"/>
+      <rect x="38" y="6" width="12" height="50" fill="#F3F4F6"/>
+      <path d="M4 58 C 20 58, 30 40, 56 8" stroke="#0D1321" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <div class="wordmark" style="font-size:20px;">Fin<span>Track</span></div>
+  </div>
+  <a class="drawer-item" href="app.html" style="text-decoration:none;"><span class="di-icon">📊</span> Dashboard</a>
+  <a class="drawer-item" href="app.html" style="text-decoration:none;"><span class="di-icon">🧾</span> Expenses</a>
+  <a class="drawer-item" href="salary.html" style="text-decoration:none;"><span class="di-icon">💼</span> Salary</a>
+  <a class="drawer-item" id="drawerOwe" href="debts.html?view=owe" style="text-decoration:none;"><span class="di-icon">📤</span> Debt I Owe</a>
+  <a class="drawer-item" id="drawerReceive" href="debts.html?view=receive" style="text-decoration:none;"><span class="di-icon">📥</span> Money to Receive</a>
+  <a class="drawer-item" href="analytics.html" style="text-decoration:none;"><span class="di-icon">📈</span> Analytics</a>
+  <a class="drawer-item" href="goals.html" style="text-decoration:none;"><span class="di-icon">🐖</span> Savings Goals</a>
+  <a class="drawer-item" href="settings.html" style="text-decoration:none;"><span class="di-icon">⚙️</span> Settings</a>
+  <button class="drawer-item" onclick="logout()"><span class="di-icon">🚪</span> Logout</button>
+</nav>
+
+<div class="app-shell">
+  <header class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    </button>
+    <div class="brand">Debts</div>
+    <a class="icon-btn" href="app.html" aria-label="Back" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
+  </header>
+
+  <div class="summary-strip debts">
+    <div class="summary-card owe">
+      <div class="sc-label">You owe</div>
+      <div class="sc-amount" id="sumOweAed">—</div>
+      <div class="sc-amount" id="sumOweInr" style="font-size:13px;margin-top:2px;">—</div>
+      <div class="dh-sub" id="sumOweSub" style="font-size:11px;color:var(--text-secondary);margin-top:4px;">—</div>
+    </div>
+    <div class="summary-card receive">
+      <div class="sc-label">Owed to you</div>
+      <div class="sc-amount" id="sumReceiveAed">—</div>
+      <div class="sc-amount" id="sumReceiveInr" style="font-size:13px;margin-top:2px;">—</div>
+      <div class="dh-sub" id="sumReceiveSub" style="font-size:11px;color:var(--text-secondary);margin-top:4px;">—</div>
+    </div>
+  </div>
+
+  <div class="debt-toggle">
+    <button class="active" data-dir="i_owe">I Owe</button>
+    <button data-dir="owed_to_me">Owed to Me</button>
+  </div>
+
+  <section class="section">
+    <div id="debtList"></div>
+  </section>
+</div>
+
+<button class="fab" id="addDebtBtn" aria-label="Add debt">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<!-- Add Debt form -->
+<div class="form-screen" id="addDebtForm">
+  <div class="app-shell" style="padding-bottom:20px;">
+    <header class="topbar">
+      <button class="icon-btn" id="addFormClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="brand">Add Debt</div>
+      <span style="width:40px;"></span>
+    </header>
+    <div class="form-body">
+      <div class="form-field">
+        <label>This is</label>
+        <select id="newDirection">
+          <option value="i_owe">Money I owe</option>
+          <option value="owed_to_me">Money owed to me</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Person's name</label>
+        <input type="text" id="newPerson" placeholder="e.g. Rajeesh">
+      </div>
+      <div class="form-grid-2">
+        <div class="form-field">
+          <label>Amount</label>
+          <input type="number" inputmode="decimal" id="newAmount" placeholder="0">
+        </div>
+        <div class="form-field">
+          <label>Wallet</label>
+          <select id="newWallet">
+            <option value="aed">🇦🇪 AED</option>
+            <option value="inr">🇮🇳 INR</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-field">
+          <label>Due date</label>
+          <input type="date" id="newDue">
+        </div>
+        <div class="form-field">
+          <label>Priority</label>
+          <select id="newPriority">
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Phone number (optional)</label>
+        <input type="tel" id="newPhone" placeholder="Optional">
+      </div>
+      <div class="form-field">
+        <label>Notes</label>
+        <input type="text" id="newNotes" placeholder="Optional notes">
+      </div>
+    </div>
+    <div class="form-footer">
+      <button class="save-btn" id="saveDebtBtn">Save Debt</button>
+    </div>
+  </div>
+</div>
+
+<!-- Debt detail -->
+<div class="form-screen" id="debtDetail">
+  <div class="app-shell" style="padding-bottom:20px;">
+    <header class="topbar">
+      <button class="icon-btn" id="detailClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="brand">Debt Details</div>
+      <span style="width:40px;"></span>
+    </header>
+
+    <div class="detail-hero">
+      <div class="detail-avatar" id="detailAvatar">--</div>
+      <h2 id="detailName">—</h2>
+      <div class="dh-sub" id="detailSub">—</div>
+    </div>
+
+    <div class="detail-progress">
+      <div class="progress-labels">
+        <span>Remaining: <b id="detailRemaining">—</b></span>
+        <span>Total: <b id="detailTotal">—</b></span>
+      </div>
+      <div class="budget-track"><div class="budget-fill ok" id="detailProgressFill" style="width:0%"></div></div>
+      <div style="text-align:right;font-size:11px;color:var(--text-secondary);margin-top:6px;" id="detailPct">0% paid</div>
+    </div>
+
+    <section class="section" style="padding-top:0;">
+      <div class="section-title">Log a Payment</div>
+      <div class="log-payment-row">
+        <input type="number" inputmode="decimal" id="paymentAmountInput" placeholder="Amount received/paid">
+        <button id="logPaymentBtn">Add</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Payment History</div>
+      <div class="card" id="paymentHistory"></div>
+    </section>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/wallet-store.js"></script>
+<script src="js/debts.js"></script>
+<script src="js/offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

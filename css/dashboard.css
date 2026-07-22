@@ -1,0 +1,168 @@
+/* ============================================================
+   FinTrack — Dashboard
+   ============================================================ */
+
+.app-shell { position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh; padding-bottom: 100px; }
+
+/* ---------- Top bar ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 8px;
+}
+.icon-btn {
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--bg-elevated); border: 1px solid var(--border);
+}
+.icon-btn svg { width: 20px; height: 20px; stroke: var(--text-primary); }
+.topbar .brand { font-family: var(--font-display); font-size: 16px; font-weight: 600; }
+.topbar .brand span { color: var(--slate-light); font-weight: 500; }
+
+/* ---------- Section wrapper ---------- */
+.section { padding: 20px; }
+.section-title {
+  font-size: 13px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text-secondary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+}
+.section-title .see-all { font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--gold); }
+
+/* ---------- Wallet balance cards ---------- */
+.wallet-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.wallet-card {
+  background: linear-gradient(150deg, var(--bg-elevated), rgba(51,65,85,0.25));
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 18px;
+  position: relative; overflow: hidden;
+}
+.wallet-card::after {
+  content: ''; position: absolute; right: -18px; bottom: -18px; width: 70px; height: 70px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(212,175,55,0.12), transparent 70%);
+}
+.wallet-card .w-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.wallet-card .w-amount { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.wallet-card .w-amount .cur { font-size: 13px; color: var(--text-secondary); font-weight: 500; margin-right: 3px; }
+.wallet-card .w-trend { font-size: 11px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+.w-trend.up { color: var(--positive); }
+.w-trend.down { color: var(--negative); }
+
+/* ---------- Wallet toggle (segmented) ---------- */
+.segmented {
+  display: flex; background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 999px; padding: 3px; margin: 4px 20px 0;
+}
+.segmented button {
+  flex: 1; padding: 9px; font-size: 13px; font-weight: 600; border-radius: 999px;
+  color: var(--text-secondary); transition: all .2s var(--ease);
+}
+.segmented button.active { background: var(--gold); color: var(--navy); }
+
+/* ---------- Stat pills (today / month) ---------- */
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.stat-pill {
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.stat-pill .s-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+.stat-pill .s-amount { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+
+/* ---------- Debts summary ---------- */
+.debt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.debt-card {
+  border-radius: var(--radius-sm); padding: 16px; border: 1px solid var(--border);
+}
+.debt-card.owe { background: rgba(192,91,77,0.08); }
+.debt-card.receive { background: rgba(46,125,107,0.1); }
+.debt-card .d-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.debt-card .d-amount { font-family: var(--font-display); font-size: 19px; font-weight: 600; }
+.debt-card.owe .d-amount { color: var(--negative); }
+.debt-card.receive .d-amount { color: var(--positive); }
+.debt-card .d-sub { font-size: 11px; color: var(--text-secondary); margin-top: 6px; }
+
+/* ---------- Budget bars ---------- */
+.budget-item { margin-bottom: 16px; }
+.budget-item:last-child { margin-bottom: 0; }
+.budget-head { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.budget-head .b-name { color: var(--text-primary); }
+.budget-head .b-figures { color: var(--text-secondary); }
+.budget-track { height: 8px; border-radius: 6px; background: var(--bg-elevated); overflow: hidden; }
+.budget-fill { height: 100%; border-radius: 6px; transition: width .4s var(--ease); }
+.budget-fill.ok { background: var(--positive); }
+.budget-fill.warn { background: var(--gold); }
+.budget-fill.over { background: var(--negative); }
+
+/* ---------- Savings goals ---------- */
+.goal-card {
+  display: flex; align-items: center; gap: 14px; padding: 14px;
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+.goal-card:last-child { margin-bottom: 0; }
+.goal-ring {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; font-family: var(--font-display);
+}
+.goal-info { flex: 1; }
+.goal-info .g-name { font-size: 14px; margin-bottom: 3px; }
+.goal-info .g-sub { font-size: 12px; color: var(--text-secondary); }
+
+/* ---------- Category donut ---------- */
+.donut-wrap { display: flex; align-items: center; gap: 22px; }
+.donut { width: 120px; height: 120px; border-radius: 50%; flex-shrink: 0; }
+.legend { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.legend-item .l-name { flex: 1; color: var(--text-secondary); }
+.legend-item .l-pct { color: var(--text-primary); font-weight: 600; }
+
+/* ---------- Recent transactions ---------- */
+.tx-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tx-item:last-child { border-bottom: none; }
+.tx-icon {
+  width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; background: var(--bg-elevated); flex-shrink: 0;
+}
+.tx-info { flex: 1; min-width: 0; }
+.tx-info .t-name { font-size: 14px; margin-bottom: 2px; }
+.tx-info .t-sub { font-size: 11px; color: var(--text-secondary); }
+.tx-amount { font-family: var(--font-display); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.tx-amount.expense { color: var(--negative); }
+.tx-amount.income { color: var(--positive); }
+
+/* ---------- Card container ---------- */
+.card {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+
+/* ---------- Floating action button ---------- */
+.fab {
+  position: fixed; right: 20px; bottom: 28px; z-index: 5;
+  width: 58px; height: 58px; border-radius: 50%;
+  background: var(--gold); color: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(212,175,55,0.35);
+}
+.fab svg { width: 26px; height: 26px; stroke: var(--navy); stroke-width: 2.5; }
+
+/* ---------- Drawer nav ---------- */
+.drawer-backdrop {
+  position: fixed; inset: 0; background: rgba(13,19,33,0.7); backdrop-filter: blur(2px);
+  z-index: 20; opacity: 0; pointer-events: none; transition: opacity .25s var(--ease);
+}
+.drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 78%; max-width: 300px;
+  background: var(--navy-soft); border-right: 1px solid var(--border);
+  z-index: 21; transform: translateX(-100%); transition: transform .3s var(--ease);
+  overflow-y: auto; padding: 24px 0;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-head { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+.drawer-item {
+  display: flex; align-items: center; gap: 14px; padding: 13px 20px; font-size: 14px;
+  color: var(--text-secondary); width: 100%; text-align: left;
+}
+.drawer-item.active { color: var(--gold); background: rgba(212,175,55,0.06); }
+.drawer-item .di-icon { width: 18px; text-align: center; }

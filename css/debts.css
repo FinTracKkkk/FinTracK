@@ -1,0 +1,70 @@
+/* ============================================================
+   FinTrack — Debts Module
+   ============================================================ */
+
+.summary-strip.debts { grid-template-columns: 1fr 1fr; }
+.summary-card.owe .sc-amount { color: var(--negative); }
+.summary-card.receive .sc-amount { color: var(--positive); }
+
+.debt-toggle { display: flex; gap: 8px; padding: 4px 20px 0; }
+.debt-toggle button {
+  flex: 1; padding: 10px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--border); color: var(--text-secondary); background: var(--bg-elevated);
+}
+.debt-toggle button.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+.debt-list-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 10px;
+}
+.debt-avatar {
+  width: 42px; height: 42px; border-radius: 50%; background: var(--slate);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 600; font-size: 15px; flex-shrink: 0;
+}
+.debt-mid { flex: 1; min-width: 0; }
+.debt-mid .dm-name { font-size: 14.5px; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+.debt-mid .dm-sub { font-size: 11.5px; color: var(--text-secondary); }
+.priority-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.priority-dot.high { background: var(--negative); }
+.priority-dot.normal { background: var(--gold); }
+.priority-dot.low { background: var(--text-secondary); }
+.debt-right { text-align: right; flex-shrink: 0; }
+.debt-right .dr-amount { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+.debt-right .dr-status { font-size: 10px; margin-top: 3px; padding: 2px 8px; border-radius: 999px; display: inline-block; }
+.dr-status.open { background: rgba(212,175,55,0.12); color: var(--gold); }
+.dr-status.partially_paid { background: rgba(100,116,139,0.2); color: var(--slate-light); }
+.dr-status.settled { background: rgba(46,125,107,0.15); color: var(--positive); }
+.dr-status.overdue { background: rgba(192,91,77,0.15); color: var(--negative); }
+
+/* Detail screen */
+.detail-hero { text-align: center; padding: 10px 20px 20px; }
+.detail-avatar {
+  width: 64px; height: 64px; border-radius: 50%; background: var(--slate); margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center; font-family: var(--font-display);
+  font-size: 22px; font-weight: 600;
+}
+.detail-hero h2 { font-size: 19px; margin-bottom: 4px; }
+.detail-hero .dh-sub { font-size: 12.5px; color: var(--text-secondary); }
+.detail-progress { padding: 0 20px 20px; }
+.progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+.progress-labels b { color: var(--text-primary); font-size: 14px; }
+
+.payment-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.payment-item:last-child { border-bottom: none; }
+.payment-item .p-date { font-size: 11.5px; color: var(--text-secondary); }
+.payment-item .p-notes { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.payment-item .p-amount { font-family: var(--font-display); font-weight: 600; color: var(--positive); }
+
+.log-payment-row { display: flex; gap: 8px; padding: 4px 20px 0; }
+.log-payment-row input {
+  flex: 1; padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03); color: var(--text-primary); font-size: 14px;
+}
+.log-payment-row button {
+  padding: 0 18px; border-radius: var(--radius-sm); background: var(--gold); color: var(--navy); font-weight: 700; font-size: 13px;
+}

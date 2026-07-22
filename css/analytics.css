@@ -1,0 +1,61 @@
+/* ============================================================
+   FinTrack — Analytics Module
+   ============================================================ */
+
+.period-row { display: flex; gap: 8px; padding: 4px 20px 0; overflow-x: auto; }
+.period-row button {
+  flex-shrink: 0; padding: 8px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+  border: 1px solid var(--border); color: var(--text-secondary); background: var(--bg-elevated);
+  white-space: nowrap;
+}
+.period-row button.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+/* Income vs Expense */
+.iv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.iv-card { border-radius: var(--radius-sm); padding: 14px 16px; }
+.iv-card.income { background: rgba(46,125,107,0.1); border: 1px solid rgba(46,125,107,0.25); }
+.iv-card.expense { background: rgba(192,91,77,0.08); border: 1px solid rgba(192,91,77,0.25); }
+.iv-card .iv-label { font-size: 11.5px; color: var(--text-secondary); margin-bottom: 4px; }
+.iv-card .iv-amount { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+.iv-card.income .iv-amount { color: var(--positive); }
+.iv-card.expense .iv-amount { color: var(--negative); }
+
+.iv-bar-track { height: 10px; border-radius: 6px; background: var(--bg-elevated); overflow: hidden; display: flex; margin-bottom: 8px; }
+.iv-bar-income { height: 100%; background: var(--positive); }
+.iv-bar-expense { height: 100%; background: var(--negative); }
+
+.net-row {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;
+  background: var(--bg-elevated); border-radius: var(--radius-sm); font-size: 13px;
+}
+.net-row .net-amount { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+.net-amount.positive { color: var(--positive); }
+.net-amount.negative { color: var(--negative); }
+
+/* Cash flow bars */
+.cashflow-chart {
+  display: flex; align-items: flex-end; gap: 8px; height: 130px; padding: 10px 4px 0;
+}
+.cf-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+.cf-bar-wrap { width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+.cf-bar { width: 60%; border-radius: 4px 4px 0 0; transition: height .3s var(--ease); }
+.cf-bar.positive { background: var(--positive); }
+.cf-bar.negative { background: var(--negative); align-self: flex-start; margin-top: auto; }
+.cf-label { font-size: 10px; color: var(--text-secondary); }
+
+/* Category detail list (bigger than dashboard mini version) */
+.cat-detail-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.cat-detail-item:last-child { border-bottom: none; }
+.cat-detail-item .legend-dot { width: 10px; height: 10px; }
+.cat-detail-item .cd-name { flex: 1; font-size: 13px; }
+.cat-detail-item .cd-amount { font-size: 13px; font-family: var(--font-display); font-weight: 600; margin-right: 8px; }
+.cat-detail-item .cd-pct { font-size: 11.5px; color: var(--text-secondary); width: 34px; text-align: right; }
+
+/* Export buttons */
+.export-btn {
+  flex: 1; padding: 13px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.export-btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+.export-btn.primary { background: var(--gold); color: var(--navy); border: none; }
+.export-btn:active { opacity: 0.8; }

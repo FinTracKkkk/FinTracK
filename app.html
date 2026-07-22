@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D1321">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>FinTrack — Dashboard</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/quick-add.css">
+<link rel="stylesheet" href="css/alerts.css">
+</head>
+<body>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head" style="display:flex;align-items:center;gap:10px;">
+    <svg viewBox="0 0 64 64" fill="none" style="width:32px;height:32px;flex-shrink:0;">
+      <rect x="6" y="34" width="12" height="22" fill="#D4AF37"/>
+      <rect x="22" y="20" width="12" height="36" fill="#64748B"/>
+      <rect x="38" y="6" width="12" height="50" fill="#F3F4F6"/>
+      <path d="M4 58 C 20 58, 30 40, 56 8" stroke="#0D1321" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <div class="wordmark" style="font-size:20px;">Fin<span>Track</span></div>
+  </div>
+  <button class="drawer-item active"><span class="di-icon">📊</span> Dashboard</button>
+  <button class="drawer-item"><span class="di-icon">➕</span> Quick Add Expense</button>
+  <button class="drawer-item"><span class="di-icon">🧾</span> Expenses</button>
+  <button class="drawer-item"><span class="di-icon">💰</span> Income</button>
+  <a class="drawer-item" href="salary.html" style="text-decoration:none;"><span class="di-icon">💼</span> Salary</a>
+  <button class="drawer-item"><span class="di-icon">🎯</span> Budgets</button>
+  <a class="drawer-item" href="debts.html?view=owe" style="text-decoration:none;"><span class="di-icon">📤</span> Debt I Owe</a>
+  <a class="drawer-item" href="debts.html?view=receive" style="text-decoration:none;"><span class="di-icon">📥</span> Money to Receive</a>
+  <a class="drawer-item" href="analytics.html" style="text-decoration:none;"><span class="di-icon">📈</span> Analytics</a>
+  <button class="drawer-item"><span class="di-icon">📑</span> Reports</button>
+  <button class="drawer-item"><span class="di-icon">📅</span> Calendar</button>
+  <a class="drawer-item" href="goals.html" style="text-decoration:none;"><span class="di-icon">🐖</span> Savings Goals</a>
+  <button class="drawer-item"><span class="di-icon">🧷</span> Receipts</button>
+  <button class="drawer-item"><span class="di-icon">☁️</span> Backup &amp; Restore</button>
+  <button class="drawer-item"><span class="di-icon">🔄</span> Supabase Sync</button>
+  <button class="drawer-item"><span class="di-icon">🔔</span> Notifications</button>
+  <button class="drawer-item"><span class="di-icon">👤</span> Profile</button>
+  <a class="drawer-item" href="settings.html" style="text-decoration:none;"><span class="di-icon">⚙️</span> Settings</a>
+  <button class="drawer-item"><span class="di-icon">❓</span> Help</button>
+  <button class="drawer-item" onclick="logout()"><span class="di-icon">🚪</span> Logout</button>
+</nav>
+
+<div class="app-shell">
+
+  <header class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    </button>
+    <div class="brand">Fin<span>Track</span></div>
+    <div class="bell-wrap">
+      <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <span class="bell-badge" id="bellBadge" style="display:none;"></span>
+    </div>
+  </header>
+
+  <div class="alert-panel-backdrop" id="alertPanelBackdrop"></div>
+  <div class="alert-panel" id="alertPanel">
+    <div class="alert-panel-head">Alerts</div>
+    <div id="alertList"></div>
+  </div>
+
+  <!-- Wallet balances -->
+  <section class="section">
+    <div class="section-title">Balances</div>
+    <div class="wallet-row" id="walletRow"></div>
+  </section>
+
+  <!-- Today / Month toggle + stats -->
+  <div class="segmented">
+    <button class="active" data-wallet="aed">Dubai (AED)</button>
+    <button data-wallet="inr">India (INR)</button>
+  </div>
+  <section class="section" style="padding-top:0;">
+    <div class="stat-row">
+      <div class="stat-pill">
+        <div class="s-label">Today's spending</div>
+        <div class="s-amount" id="todayAmt">—</div>
+      </div>
+      <div class="stat-pill">
+        <div class="s-label">This month</div>
+        <div class="s-amount" id="monthAmt">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Debts -->
+  <section class="section">
+    <div class="section-title">Debts <span class="see-all">View all</span></div>
+    <div class="debt-row">
+      <div class="debt-card owe">
+        <div class="d-label">You owe</div>
+        <div class="d-amount" id="debtOwe">—</div>
+        <div class="d-sub" id="debtOweSub">—</div>
+      </div>
+      <div class="debt-card receive">
+        <div class="d-label">Owed to you</div>
+        <div class="d-amount" id="debtReceive">—</div>
+        <div class="d-sub" id="debtReceiveSub">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Budgets -->
+  <section class="section">
+    <div class="section-title">Budget vs Actual <span class="see-all">View all</span></div>
+    <div class="card" id="budgetList"></div>
+  </section>
+
+  <!-- Savings goals -->
+  <section class="section">
+    <div class="section-title">Savings Goals <a href="goals.html" class="see-all" style="text-decoration:none;">View all</a></div>
+    <div id="goalList"></div>
+  </section>
+
+  <!-- Category breakdown -->
+  <section class="section">
+    <div class="section-title">Spending by Category</div>
+    <div class="card donut-wrap">
+      <div class="donut" id="donut"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <!-- Recent transactions -->
+  <section class="section">
+    <div class="section-title">Recent Transactions <span class="see-all">View all</span></div>
+    <div class="card" id="txList"></div>
+  </section>
+
+</div>
+
+<button class="fab" id="fabBtn" aria-label="Quick add expense">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<div class="save-toast" id="saveToast"></div>
+
+<!-- Quick Add Sheet -->
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h3>Add Transaction</h3>
+    <button class="sheet-close" id="sheetClose" aria-label="Close">✕</button>
+  </div>
+
+  <div class="type-toggle">
+    <button class="active expense" data-type="expense">Expense</button>
+    <button data-type="income">Income</button>
+  </div>
+
+  <div class="wallet-chip-row">
+    <button class="wallet-chip active" data-wallet="aed">🇦🇪 Dubai (AED)</button>
+    <button class="wallet-chip" data-wallet="inr">🇮🇳 India (INR)</button>
+  </div>
+
+  <div class="amount-wrap">
+    <span class="cur-symbol" id="curSymbol">AED</span>
+    <input type="number" inputmode="decimal" id="amountInput" placeholder="0" autocomplete="off">
+  </div>
+
+  <div class="cat-grid" id="catGrid"></div>
+
+  <button class="details-toggle" id="detailsToggle">Add details (payment method, notes, date...)</button>
+
+  <div class="details-panel" id="detailsPanel">
+    <div class="field" style="margin-bottom:14px;">
+      <label>Description</label>
+      <input type="text" id="descInput" placeholder="e.g. Carrefour groceries">
+    </div>
+
+    <div class="receipt-row">
+      <label class="receipt-btn" for="receiptInput">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Add receipt photo
+      </label>
+      <input type="file" id="receiptInput" accept="image/*" capture="environment" style="display:none;">
+      <div id="receiptPreviewWrap"></div>
+    </div>
+
+    <div class="field">
+      <label>Notes</label>
+      <input type="text" id="notesInput" placeholder="Optional notes">
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <button class="save-btn" id="saveBtn">Save Transaction</button>
+  </div>
+</div>
+
+<div class="alert-toast" id="alertToast">
+  <span class="alert-dot red"></span>
+  <span class="at-text"></span>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/wallet-store.js"></script>
+<script src="js/transaction-store.js"></script>
+<script src="js/goals-store.js"></script>
+<script src="js/dashboard-data.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/quick-add.js"></script>
+<script src="js/alerts.js"></script>
+<script src="js/offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>
