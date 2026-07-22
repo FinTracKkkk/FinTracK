@@ -1,11 +1,13 @@
 /* ============================================================
    FinTrack — Service Worker
-   Cache-first app shell so the app opens and works with zero
-   internet connection. Bump CACHE_VERSION whenever files change
-   so returning users get the update.
+   Network-first: always tries to fetch the latest version first,
+   and only falls back to the cached copy when there's no internet.
+   This means deployed updates show up immediately when online,
+   while the app still works fully offline as a fallback.
+   Bump CACHE_VERSION whenever you want to force old caches to clear.
    ============================================================ */
 
-const CACHE_VERSION = 'fintrack-v1';
+const CACHE_VERSION = 'fintrack-v2';
 
 const APP_SHELL = [
   'index.html',
@@ -60,24 +62,21 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(event.request)
-        .then((response) => {
-          // Cache successful same-origin responses for next time offline
-          if (response.ok && event.request.url.startsWith(self.location.origin)) {
-            const clone = response.clone();
-            caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => {
-          // Offline and not cached — fall back to the dashboard shell for navigations
-          if (event.request.mode === 'navigate') {
-            return caches.match('app.html');
-          }
+    fetch(event.request)
+      .then((response) => {
+        // Got a fresh response — cache it for offline use later, and serve it now
+        if (response.ok && event.request.url.startsWith(self.location.origin)) {
+          const clone = response.clone();
+          caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => {
+        // No network — fall back to whatever we have cached
+        return caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') return caches.match('app.html');
         });
-    })
+      })
   );
 });
