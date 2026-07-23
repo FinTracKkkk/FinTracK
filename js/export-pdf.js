@@ -22,7 +22,7 @@ function buildReportDoc() {
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(212, 175, 55);
-  doc.text('Track Today, Grow Tomorrow', 14, 21);
+  doc.text('Track. Control. Grow.', 14, 21);
 
   doc.setTextColor(20, 20, 20);
   doc.setFontSize(13);

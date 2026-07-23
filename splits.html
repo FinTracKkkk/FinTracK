@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D1321">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>FinTrack — Split Expense</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/salary.css">
+<link rel="stylesheet" href="css/debts.css">
+<link rel="stylesheet" href="css/quick-add.css">
+<link rel="stylesheet" href="css/splits.css">
+</head>
+<body>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head" style="display:flex;align-items:center;justify-content:center;">
+    <img src="icons/icon-512.png" alt="FinTrack" style="width:64px;height:64px;border-radius:16px;">
+  </div>
+  <a class="drawer-item" href="app.html" style="text-decoration:none;"><span class="di-icon">📊</span> Dashboard</a>
+  <a class="drawer-item" href="salary.html" style="text-decoration:none;"><span class="di-icon">💼</span> Salary</a>
+  <a class="drawer-item" id="drawerOwe" href="debts.html?view=owe" style="text-decoration:none;"><span class="di-icon">📤</span> Debt I Owe</a>
+  <a class="drawer-item" id="drawerReceive" href="debts.html?view=receive" style="text-decoration:none;"><span class="di-icon">📥</span> Money to Receive</a>
+  <a class="drawer-item active" href="splits.html" style="text-decoration:none;"><span class="di-icon">🤝</span> Split Expense</a>
+  <a class="drawer-item" href="budgets.html" style="text-decoration:none;"><span class="di-icon">🎯</span> Budgets</a>
+  <a class="drawer-item" href="goals.html" style="text-decoration:none;"><span class="di-icon">🐖</span> Savings Goals</a>
+  <a class="drawer-item" href="analytics.html" style="text-decoration:none;"><span class="di-icon">📈</span> Analytics</a>
+  <a class="drawer-item" href="settings.html" style="text-decoration:none;"><span class="di-icon">⚙️</span> Settings</a>
+  <button class="drawer-item" onclick="logout()"><span class="di-icon">🚪</span> Logout</button>
+</nav>
+
+<div class="app-shell">
+  <header class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    </button>
+    <div class="brand">Split Expense</div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="refreshBtn" aria-label="Refresh">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+      <a class="icon-btn" href="app.html" aria-label="Back" style="text-decoration:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Currency -->
+  <div class="segmented" style="margin:4px 20px 0;">
+    <button class="active" data-wallet="aed">Dubai (AED)</button>
+    <button data-wallet="inr">India (INR)</button>
+  </div>
+
+  <!-- Mini dashboard -->
+  <section class="section">
+    <div class="stat-grid">
+      <div class="summary-card">
+        <div class="sc-label">Total Expenses</div>
+        <div class="sc-amount small" id="statTotalExpenses">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Total Outstanding</div>
+        <div class="sc-amount small" id="statOutstanding" style="color:var(--negative);">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Amount Collected</div>
+        <div class="sc-amount small" id="statCollected" style="color:var(--positive);">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Active Debtors</div>
+        <div class="sc-amount small" id="statDebtors">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Settled Shares</div>
+        <div class="sc-amount small" id="statSettled">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Splits Logged</div>
+        <div class="sc-amount small" id="statCount">—</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="export-btn secondary" id="downloadAllSplitsBtn">⬇️ Download Report</button>
+      <button class="export-btn primary" id="shareAllSplitsBtn">📤 Share Report</button>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <div class="tab-row" id="tabRow">
+    <button class="active" data-tab="owed">Owed to Me</button>
+    <button data-tab="expenses">Expense History</button>
+    <button data-tab="payments">Payment History</button>
+  </div>
+
+  <!-- Search + filters -->
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="Search by friend or expense name...">
+  </div>
+  <div class="filter-chip-row">
+    <select id="statusFilter">
+      <option value="all">All statuses</option>
+      <option value="settled">Settled</option>
+      <option value="partial">Partially paid</option>
+      <option value="open">Open</option>
+    </select>
+    <select id="dateFilter">
+      <option value="all">Any date</option>
+      <option value="7">Last 7 days</option>
+      <option value="30">Last 30 days</option>
+      <option value="90">Last 90 days</option>
+    </select>
+  </div>
+
+  <section class="section" id="tabContent"></section>
+</div>
+
+<button class="fab" id="newSplitBtn" aria-label="New split expense">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<!-- New Split form -->
+<div class="form-screen" id="newSplitForm">
+  <div class="app-shell" style="padding-bottom:20px;">
+    <header class="topbar">
+      <button class="icon-btn" id="splitFormClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="brand">New Split Expense</div>
+      <span style="width:40px;"></span>
+    </header>
+    <div class="form-body">
+      <div class="form-field">
+        <label>Expense title</label>
+        <input type="text" id="splitTitle" placeholder="e.g. Dinner at Zuma">
+      </div>
+      <div class="form-field">
+        <label>Total amount</label>
+        <input type="number" inputmode="decimal" id="splitAmount" placeholder="0">
+      </div>
+      <div class="form-grid-2">
+        <div class="form-field">
+          <label>Currency</label>
+          <div class="debt-toggle" id="splitWalletToggle" style="padding:0;">
+            <button type="button" class="active" data-wallet="aed">🇦🇪 AED</button>
+            <button type="button" data-wallet="inr">🇮🇳 INR</button>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Date</label>
+          <input type="date" id="splitDate">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Split equally between</label>
+        <div id="friendRows"></div>
+        <button type="button" class="add-friend-btn" id="addFriendBtn">+ Add friend</button>
+      </div>
+
+      <div class="form-field">
+        <label>Notes (optional)</label>
+        <input type="text" id="splitNotes" placeholder="Optional notes">
+      </div>
+
+      <div class="section-title" style="padding:0;margin-top:6px;">Preview</div>
+      <div class="card split-preview" id="splitPreview"></div>
+    </div>
+    <div class="form-footer">
+      <button class="save-btn" id="saveSplitBtn">Save Split</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-toast" id="saveToast"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/wallet-store.js"></script>
+<script src="js/transaction-store.js"></script>
+<script src="js/split-store.js"></script>
+<script src="js/splits.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="js/export-split-pdf.js"></script>
+<script src="js/offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

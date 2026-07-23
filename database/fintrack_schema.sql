@@ -179,6 +179,33 @@ create table audit_log (
 );
 
 -- ============================================================
+-- 11. SPLIT EXPENSES
+-- The app currently stores split-expense groups locally (per-friend
+-- shares are pushed to the `debts` table above so Owed-to-Me totals
+-- sync today); this table is provided so a future sync pass can push
+-- the split group itself (title, total, friend list) for full
+-- cross-device Expense History.
+-- ============================================================
+create table split_expenses (
+  id uuid primary key default uuid_generate_v4(),
+  wallet_id uuid references wallets(id) on delete restrict,
+  title text not null,
+  total_amount numeric(14,2) not null,
+  expense_date date not null,
+  notes text,
+  created_at timestamptz default now()
+);
+
+create table split_expense_friends (
+  id uuid primary key default uuid_generate_v4(),
+  split_expense_id uuid references split_expenses(id) on delete cascade,
+  debt_id uuid references debts(id) on delete cascade,
+  friend_name text not null,
+  share_amount numeric(14,2) not null,
+  created_at timestamptz default now()
+);
+
+-- ============================================================
 -- ROW LEVEL SECURITY
 -- Single-user app: access is protected by your in-app PIN, not
 -- Supabase Auth. RLS is enabled but open to the anon/publishable
@@ -197,6 +224,8 @@ alter table recurring_templates enable row level security;
 alter table savings_goals enable row level security;
 alter table app_settings enable row level security;
 alter table audit_log enable row level security;
+alter table split_expenses enable row level security;
+alter table split_expense_friends enable row level security;
 
 create policy "allow all - wallets" on wallets for all using (true) with check (true);
 create policy "allow all - categories" on categories for all using (true) with check (true);
@@ -210,6 +239,8 @@ create policy "allow all - recurring_templates" on recurring_templates for all u
 create policy "allow all - savings_goals" on savings_goals for all using (true) with check (true);
 create policy "allow all - app_settings" on app_settings for all using (true) with check (true);
 create policy "allow all - audit_log" on audit_log for all using (true) with check (true);
+create policy "allow all - split_expenses" on split_expenses for all using (true) with check (true);
+create policy "allow all - split_expense_friends" on split_expense_friends for all using (true) with check (true);
 
 -- ============================================================
 -- SEED DATA: default wallets + starter categories

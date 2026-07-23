@@ -7,13 +7,17 @@
    Bump CACHE_VERSION whenever you want to force old caches to clear.
    ============================================================ */
 
-const CACHE_VERSION = 'fintrack-v2';
+const CACHE_VERSION = 'fintrack-v3';
 
 const APP_SHELL = [
   'index.html',
   'app.html',
   'salary.html',
   'debts.html',
+  'splits.html',
+  'budgets.html',
+  'goals.html',
+  'transactions.html',
   'analytics.html',
   'settings.html',
   'manifest.json',
@@ -23,23 +27,39 @@ const APP_SHELL = [
   'css/quick-add.css',
   'css/salary.css',
   'css/debts.css',
+  'css/splits.css',
   'css/analytics.css',
   'css/alerts.css',
   'css/settings.css',
   'js/auth.js',
   'js/wallet-store.js',
+  'js/transaction-store.js',
+  'js/goals-store.js',
+  'js/budget-store.js',
+  'js/split-store.js',
   'js/dashboard-data.js',
   'js/dashboard.js',
   'js/quick-add.js',
   'js/salary.js',
   'js/debts.js',
+  'js/splits.js',
+  'js/budgets.js',
+  'js/goals.js',
+  'js/transactions-list.js',
   'js/analytics-data.js',
   'js/analytics.js',
+  'js/export-pdf.js',
+  'js/export-debt-pdf.js',
+  'js/export-split-pdf.js',
   'js/alerts.js',
   'js/settings.js',
   'js/offline.js',
+  'js/supabase-config.js',
+  'js/sync.js',
   'icons/icon-192.png',
-  'icons/icon-512.png'
+  'icons/icon-512.png',
+  'icons/apple-touch-icon.png',
+  'icons/logo-full.png'
 ];
 
 self.addEventListener('install', (event) => {

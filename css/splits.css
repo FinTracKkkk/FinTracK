@@ -1,0 +1,118 @@
+/* ============================================================
+   FinTrack — Split Expense Module
+   ============================================================ */
+
+/* ---------- Mini dashboard ---------- */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-grid .summary-card { padding: 13px 14px; }
+.stat-grid .sc-amount.small { font-size: 15px; }
+
+/* ---------- Tabs ---------- */
+.tab-row { display: flex; gap: 6px; padding: 4px 20px 0; overflow-x: auto; }
+.tab-row button {
+  flex: 0 0 auto; padding: 9px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+  border: 1px solid var(--border); color: var(--text-secondary); background: var(--bg-elevated); white-space: nowrap;
+}
+.tab-row button.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+/* ---------- Search ---------- */
+.search-row { padding: 14px 20px 0; }
+.search-row input {
+  width: 100%; padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03); color: var(--text-primary); font-size: 14px;
+}
+.search-row input:focus { border-color: var(--gold); outline: none; }
+.filter-chip-row { display: flex; gap: 8px; padding: 10px 20px 0; overflow-x: auto; }
+.filter-chip-row select {
+  flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--bg-elevated); color: var(--text-secondary); font-size: 12.5px;
+}
+
+/* ---------- Friend balance list (Owed to Me) ---------- */
+.friend-balance-card {
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 10px;
+}
+.fb-top { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.fb-avatar {
+  width: 42px; height: 42px; border-radius: 50%; background: var(--slate); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 600; font-size: 15px;
+}
+.fb-mid { flex: 1; min-width: 0; }
+.fb-mid .fb-name { font-size: 14.5px; margin-bottom: 3px; }
+.fb-mid .fb-sub { font-size: 11.5px; color: var(--text-secondary); }
+.fb-right { text-align: right; flex-shrink: 0; }
+.fb-right .fb-amount { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--positive); }
+.fb-chevron { width: 16px; height: 16px; stroke: var(--text-secondary); transition: transform .2s var(--ease); flex-shrink: 0; }
+.friend-balance-card.expanded .fb-chevron { transform: rotate(90deg); }
+
+.fb-detail { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.friend-balance-card.expanded .fb-detail { display: block; }
+.fb-entry {
+  display: flex; justify-content: space-between; font-size: 12.5px; padding: 6px 0; color: var(--text-secondary);
+}
+.fb-entry b { color: var(--text-primary); font-weight: 600; }
+.fb-pay-row { display: flex; gap: 8px; margin-top: 12px; }
+.fb-pay-row input {
+  flex: 1; padding: 11px 13px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03); color: var(--text-primary); font-size: 13.5px;
+}
+.fb-pay-row button {
+  padding: 0 16px; border-radius: var(--radius-sm); background: var(--gold); color: var(--navy); font-weight: 700; font-size: 12.5px;
+}
+.fb-settled-tag {
+  font-size: 10px; padding: 2px 8px; border-radius: 999px; background: rgba(46,125,107,0.15); color: var(--positive);
+}
+
+/* ---------- Expense history cards ---------- */
+.expense-card {
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 18px; margin-bottom: 12px;
+}
+.exp-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.exp-head .exp-title { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+.exp-head .exp-date { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+.exp-status { font-size: 10px; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
+.exp-status.settled { background: rgba(46,125,107,0.15); color: var(--positive); }
+.exp-status.partial { background: rgba(212,175,55,0.12); color: var(--gold); }
+.exp-status.open { background: rgba(100,116,139,0.2); color: var(--slate-light); }
+.exp-total { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin: 8px 0 10px; }
+.exp-friends { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.exp-friend-chip {
+  font-size: 11px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-secondary);
+}
+.exp-figures { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-secondary); margin-bottom: 6px; }
+.exp-figures b { color: var(--text-primary); }
+
+/* ---------- Payment history rows ---------- */
+.ph-item {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.ph-item:last-child { border-bottom: none; }
+.ph-left .ph-name { font-size: 14px; margin-bottom: 2px; }
+.ph-left .ph-sub { font-size: 11px; color: var(--text-secondary); }
+.ph-right { text-align: right; }
+.ph-right .ph-amount { font-family: var(--font-display); font-weight: 600; color: var(--positive); }
+.ph-right .ph-date { font-size: 10.5px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ---------- New Split form ---------- */
+.friend-input-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+.friend-input-row input {
+  flex: 1; padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03); color: var(--text-primary); font-size: 14px;
+}
+.friend-input-row input:focus { border-color: var(--gold); outline: none; }
+.friend-remove-btn {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--bg-elevated); border: 1px solid var(--border);
+  color: var(--negative); flex-shrink: 0; font-size: 16px; display: flex; align-items: center; justify-content: center;
+}
+.add-friend-btn {
+  width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border);
+  color: var(--gold); font-size: 13px; font-weight: 600; margin-bottom: 6px;
+}
+.split-preview { margin-top: 6px; }
+.split-preview-row {
+  display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.split-preview-row:last-child { border-bottom: none; }
+.split-preview-row b { font-family: var(--font-display); }

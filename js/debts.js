@@ -301,6 +301,16 @@ function bindDetail() {
     if (openDebtId) openEditDebt(openDebtId);
   });
 
+  document.getElementById('downloadDebtPdfBtn').addEventListener('click', () => {
+    const d = getDebts().find(x => x.id === openDebtId);
+    if (d && typeof downloadDebtPDF === 'function') downloadDebtPDF(d);
+  });
+
+  document.getElementById('shareDebtPdfBtn').addEventListener('click', () => {
+    const d = getDebts().find(x => x.id === openDebtId);
+    if (d && typeof shareDebtPDF === 'function') shareDebtPDF(d);
+  });
+
   document.querySelectorAll('#paymentWalletToggle button').forEach(btn => {
     btn.addEventListener('click', () => {
       paymentWallet = btn.dataset.wallet;

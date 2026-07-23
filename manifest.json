@@ -1,7 +1,7 @@
 {
   "name": "FinTrack",
   "short_name": "FinTrack",
-  "description": "Track Today, Grow Tomorrow — personal expense, salary, debt and savings tracker for Dubai and India.",
+  "description": "Track. Control. Grow. — personal expense, salary, debt and savings tracker for Dubai and India.",
   "start_url": "index.html",
   "scope": ".",
   "display": "standalone",

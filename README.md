@@ -1,6 +1,6 @@
 # FinTrack
 
-**Track Today, Grow Tomorrow** — a personal expense, salary, debt, and savings tracker built for tracking finances across two currencies (AED in Dubai, INR in India). Offline-first PWA, syncs to Supabase when online.
+**Track. Control. Grow.** — a personal expense, salary, debt, and savings tracker built for tracking finances across two currencies (AED in Dubai, INR in India). Offline-first PWA, syncs to Supabase when online.
 
 ## Features
 - PIN-protected login (default `5656`), change/forgot-PIN recovery
@@ -8,6 +8,8 @@
 - Quick-add expense/income with receipt photo capture
 - Salary history log
 - Debts (I Owe / Owed to Me) with partial payment tracking
+- Split Expense — split a bill equally among friends, track who's paid, collect balances (folds into Debts automatically)
+- Budgets by category with live spend tracking
 - Savings Goals with contribution tracking
 - Analytics: Daily/Weekly/Monthly/Yearly, Income vs Expense, Cash Flow, category breakdown
 - PDF report export (Download + native Share)
@@ -42,14 +44,17 @@ fintrack/
 ├── app.html             # Dashboard
 ├── salary.html
 ├── debts.html
+├── splits.html
+├── budgets.html
 ├── goals.html
+├── transactions.html
 ├── analytics.html
 ├── settings.html
 ├── manifest.json         # PWA manifest
 ├── sw.js                 # Service worker (offline caching)
 ├── css/                  # One stylesheet per module
 ├── js/                   # One script per module
-├── icons/                # App icons
+├── icons/                # App icons + logo
 └── database/
     └── fintrack_schema.sql
 ```
